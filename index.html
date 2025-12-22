@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<main>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <input type="radio" name="tab" id="tab1" checked>
+    <input type="radio" name="tab" id="tab2">
+    <input type="radio" name="tab" id="tab3">
+    <input type="radio" name="tab" id="tab4">
+
+    <div class="tab-labels">
+      <label for="tab1">Tasks</label>
+      <label for="tab2">Active Projects</label>
+      <label for="tab3">Pomodoro</label>
+      <label for="tab4">Gym</label>
+      <label for="tab5">Extra</label>
+      <label for="tab6">Shopping</label>
+      <label for="tab7">Expenses</label>
+    </div>
+
+    <div class="tab-content">
+
+      <div class="content c1">
+        <h2>Daily Tasks</h2>
+        <ul id="tasks"></ul>
+      </div>
+
+      <div class="content c2">
+        <p>Contenido de la Tab 2</p>
+      </div>
+
+      <!-- POMODORO TAB -->
+      <div class="content c3">
+
+        <div class="pomodoro-card">
+          <h2 id="mode">Trabajo</h2>
+          <div id="time">25:00</div>
+
+          <div class="controls">
+            <button id="startPause">Start</button>
+            <button id="reset">Reset</button>
+            <button id="skip">Skip</button>
+          </div>
+
+          <div class="settings">
+            <label>
+              Work
+              <input id="workMin" type="number" value="25">
+            </label>
+            <label>
+              Break
+              <input id="breakMin" type="number" value="5">
+            </label>
+            <button id="apply">Apply</button>
+          </div>
+        </div>
+      </div>
+      <div class="content c4">
+        <p>Contenido de la Tab 4</p>
+      </div>
+      <div class="content c5">
+        <p>Contenido de la Tab 5</p>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+
+
+<script src="js\script.js"></script>
+
+</body>
+</html>

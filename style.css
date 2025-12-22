@@ -1,0 +1,82 @@
+body{
+  background-color: #34304A;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, Inter, Arial, sans-serif;
+              color: white;
+}
+
+
+
+/* ===== TABS CON RADIO BUTTONS ===== */
+
+.tabs {
+  max-width: 900px;
+  margin: 2rem auto;
+  font-family: system-ui, sans-serif;
+}
+
+/* Ocultamos los radio buttons */
+.tabs input[type="radio"] {
+  display: none;
+}
+
+/* Labels (las pestañas) */
+.tab-labels {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  flex: 1;
+  margin-bottom: 1vh;
+}
+
+.tab-labels label {
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  background: #282539;
+  color: #ffffff;
+  border-radius: 8px 8px 8px 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Hover */
+.tab-labels label:hover {
+  background: #e6e6e6;
+}
+
+/* Tab activa */
+#tab1:checked ~ .tab-labels label[for="tab1"],
+#tab2:checked ~ .tab-labels label[for="tab2"],
+#tab3:checked ~ .tab-labels label[for="tab3"] {
+  background: #ffffff;
+  color: #111;
+  font-weight: 600;
+}
+
+/* Contenedor de contenidos */
+.tab-content {
+  background-color: #282539;
+  border-top: none;
+  padding: 1rem;
+  border-radius: 12px 12px 12px 12px;
+}
+
+/* Todos los contenidos ocultos por defecto */
+.content {
+  display: none;
+}
+
+/* Mostrar contenido según tab activa */
+#tab1:checked ~ .tab-content .c1 {
+  display: block;
+}
+
+#tab2:checked ~ .tab-content .c2 {
+  display: block;
+}
+
+#tab3:checked ~ .tab-content .c3 {
+  display: block;
+}
