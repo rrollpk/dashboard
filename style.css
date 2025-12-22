@@ -10,8 +10,11 @@ body{
 /* ===== TABS CON RADIO BUTTONS ===== */
 
 .tabs {
-  max-width: 900px;
-  margin: 2rem auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
   font-family: system-ui, sans-serif;
 }
 
