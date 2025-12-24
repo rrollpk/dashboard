@@ -7,20 +7,22 @@ const taskList = document.getElementById("tasks");
 fetch(API_URL)
   .then(res => res.json())
   .then(tasks => {
+    console.log("Tasks recibidas:", tasks); // 👈 Debug
     tasks.forEach(task => {
+      console.log(`Task ${task.task_id}: completed =`, task.completed, typeof task.completed); // 👈 Debug
       const li = document.createElement("li");
       li.classList.add("task-item");
       li.dataset.taskId = task.task_id;
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
-      checkbox.checked = task.completed;
+      checkbox.checked = Boolean(task.completed); // 👈 Forzar a boolean
       checkbox.dataset.taskId = task.task_id;
 
       const label = document.createElement("span");
       label.textContent = task.name.trim();
 
-      if (task.completed) {
+      if (task.completed) { // 👈 Esto también debería marcar como completed
         li.classList.add("completed");
       }
 
