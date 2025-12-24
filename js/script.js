@@ -1,50 +1,37 @@
 // ---------------- TASKS ----------------
 
-
 const API_URL = "https://api-dashboard-production-fc05.up.railway.app/tasks/today";
 const taskList = document.getElementById("tasks");
 
+// Cargar tareas de hoy
 fetch(API_URL)
   .then(res => res.json())
   .then(tasks => {
     tasks.forEach(task => {
-      // li principal
       const li = document.createElement("li");
-      li.dataset.taskId = task.task_id;   // 🔑 CLAVE
       li.classList.add("task-item");
+      li.dataset.taskId = task.task_id;
 
-      // checkbox
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.checked = task.completed;
-      checkbox.dataset.taskId = task.task_id; // 🔑 CLAVE
+      checkbox.dataset.taskId = task.task_id;
 
-      // label
       const label = document.createElement("span");
       label.textContent = task.name.trim();
 
-      // estado visual inicial
       if (task.completed) {
         li.classList.add("completed");
       }
 
-      // evento (ya ligado al ID real)
       checkbox.addEventListener("change", () => {
-        const taskId = checkbox.dataset.taskId;
-        const completed = checkbox.checked;
+        const taskId = Number(checkbox.dataset.taskId); // 👈 int real
+        const completed = checkbox.checked;              // 👈 bool real
 
+        // UI optimista
         li.classList.toggle("completed", completed);
 
-        // 👉 aquí tu dashboard ya puede usar taskId
-        console.log(
-          "UPDATE TASK",
-          taskId,
-          "completed =",
-          completed
-        );
-
-        // más adelante:
-        // updateTask(taskId, completed)
+        updateTask(taskId, completed);
       });
 
       li.appendChild(checkbox);
@@ -56,15 +43,36 @@ fetch(API_URL)
     console.error("Error cargando tasks:", err);
   });
 
-// Pomodoro Timer
+// ---------------- API WRITE ----------------
 
-
+function updateTask(taskId, completed) {
+  fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      task_id: taskId,
+      completed: completed
+    })
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("POST failed");
+    }
+  })
+  .catch(err => {
+    console.error("Error actualizando task:", err);
+  });
+}
 
 // ---------------- HELPERS ----------------
+
 const pad = n => String(n).padStart(2, "0");
 const format = s => `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
 
-// ---------------- AUDIO (DESBLOQUEADO) ----------------
+// ---------------- AUDIO ----------------
+
 let audioCtx = null;
 
 function initAudio() {
@@ -93,15 +101,15 @@ function playBeep(freq = 880, duration = 300) {
   setTimeout(() => osc.stop(), duration);
 }
 
-// ---------------- STATE ----------------
-let mode = "work"; // work | break
+// ---------------- POMODORO ----------------
+
+let mode = "work";
 let running = false;
 let workSec = 25 * 60;
 let breakSec = 5 * 60;
 let remaining = workSec;
 let interval = null;
 
-// ---------------- DOM ----------------
 const timeEl = document.getElementById("time");
 const modeEl = document.getElementById("mode");
 const startPause = document.getElementById("startPause");
@@ -111,20 +119,17 @@ const workMin = document.getElementById("workMin");
 const breakMin = document.getElementById("breakMin");
 const applyBtn = document.getElementById("apply");
 
-// ---------------- RENDER ----------------
 function render() {
   timeEl.textContent = format(remaining);
   modeEl.textContent = mode === "work" ? "Trabajo" : "Descanso";
   startPause.textContent = running ? "Pause" : "Start";
 }
 
-// ---------------- LOGIC ----------------
 function tick() {
   remaining--;
   render();
 
   if (remaining <= 0) {
-    // 🔔 SUENA SOLO CUANDO ACABA
     playBeep(mode === "work" ? 880 : 660);
     switchMode();
   }
@@ -157,8 +162,9 @@ function reset() {
 }
 
 // ---------------- EVENTS ----------------
+
 startPause.onclick = () => {
-  initAudio(); // 🔓 desbloquea audio (CLAVE)
+  initAudio();
   running ? pause() : start();
 };
 
@@ -172,4 +178,5 @@ applyBtn.onclick = () => {
 };
 
 // ---------------- INIT ----------------
+
 render();
