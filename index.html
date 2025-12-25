@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="calendar-styles.css">
 </head>
 
 <body>
@@ -31,8 +32,17 @@
     <div class="tab-content">
 
       <div class="content c1">
-        <h2>Daily Tasks</h2>
-        <ul id="tasks"></ul>
+        <div class="box">  <h2>Daily Tasks</h2>
+          <ul id="tasks"></ul>
+        </div>
+        <div class="box">
+          <h2 id="scheduleDate">Calendar</h2>
+          <div class="schedule">
+            <div class="schedule-container">
+              <div id="scheduleHours" class="schedule-hours"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="content c2">
@@ -80,6 +90,7 @@
 
 
 <script src="js\script.js"></script>
+<script src="js\calendar.js"></script>
 
 </body>
 </html>
