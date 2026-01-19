@@ -18,10 +18,13 @@
     <input type="radio" name="tab" id="tab2">
     <input type="radio" name="tab" id="tab3">
     <input type="radio" name="tab" id="tab4">
+    <input type="radio" name="tab" id="tab5">
+    <input type="radio" name="tab" id="tab6">
+    <input type="radio" name="tab" id="tab7">
 
     <div class="tab-labels">
       <label for="tab1">Tasks</label>
-      <label for="tab2">Active Projects</label>
+      <label for="tab2">Daily Notes and Open Projects</label>
       <label for="tab3">Pomodoro</label>
       <label for="tab4">Gym</label>
       <label for="tab5">Extra</label>
@@ -46,9 +49,15 @@
       </div>
 
       <div class="content c2">
-        <p>Contenido de la Tab 2</p>
+        <div class="box">
+          <h2>Daily Notes</h2>
+          <textarea id="dailyNotes" placeholder="No daily planning setted"></textarea>
+        </div>
+        <div class="box">
+          <h2>Open  Projects</h2>
+          <ul id="projects"></ul>
+        </div>
       </div>
-
       <!-- POMODORO TAB -->
       <div class="content c3">
 
@@ -80,6 +89,12 @@
       </div>
       <div class="content c5">
         <p>Contenido de la Tab 5</p>
+      </div>
+      <div class="content c6">
+        <p>Contenido de la Tab 6</p>
+      </div>
+      <div class="content c7">
+        <p>Contenido de la Tab 7</p>
       </div>
     </div>
 
