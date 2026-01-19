@@ -1,6 +1,7 @@
 // ---------------- TASKS ----------------
 
-const API_URL = "https://api-dashboard-production-fc05.up.railway.app/tasks/today";
+const API_URL = "https://api-dashboard-production-fc05.up.railway.app/task/log/today";
+const API_UPDATE_URL = "https://api-dashboard-production-fc05.up.railway.app/tasks/log/today/status";
 const taskList = document.getElementById("tasks");
 
 // Cargar tareas de hoy
@@ -48,7 +49,7 @@ fetch(API_URL)
 // ---------------- API WRITE ----------------
 
 function updateTask(taskId, completed) {
-  fetch(API_URL, {
+  fetch(API_UPDATE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
