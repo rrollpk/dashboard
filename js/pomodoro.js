@@ -2,9 +2,6 @@
 
 const API_BASE = "https://api-dashboard-production-fc05.up.railway.app";
 
-const STUDY_DURATION = 3 * 60 * 60; // 3h
-const REST_DURATION  = 30 * 60;     // 30m
-
 // ---------------- HELPERS ----------------
 
 const pad = n => String(n).padStart(2, "0");
@@ -41,7 +38,7 @@ function playBeep(freq = 800, duration = 300) {
 
 let current = {
   pomodoro_id: null,
-  state: null // { type, started }
+  state: null // { type, started, remaining_seconds }
 };
 
 let uiInterval = null;
@@ -54,41 +51,37 @@ const startBtn = document.getElementById("startBtn");
 const stopBtn  = document.getElementById("stopBtn");
 const endBtn   = document.getElementById("endBtn");
 
-console.log("Pomodoro elements:", { timeEl, modeEl, startBtn, stopBtn, endBtn });
-
 // ---------------- CORE LOGIC ----------------
 
 function getRemainingSeconds() {
   if (!current.state) return null;
 
-  const started = new Date(current.state.started).getTime();
-  const elapsed = Math.floor((Date.now() - started) / 1000);
+  const startedMs = new Date(current.state.started).getTime();
+  const elapsed = Math.floor((Date.now() - startedMs) / 1000);
 
-  const total =
-    current.state.type === "study"
-      ? STUDY_DURATION
-      : REST_DURATION;
-
-  return Math.max(0, total - elapsed);
+  // 🔴 AQUÍ ESTÁ LA CLAVE
+  return Math.max(
+    0,
+    current.state.remaining_seconds - elapsed
+  );
 }
 
 function render() {
-  console.log("Rendering - current state:", current);
-  
   if (!current.state) {
     timeEl.textContent = "--:--";
     modeEl.textContent = "Idle";
-    console.log("No active pomodoro");
     return;
   }
 
   const remaining = getRemainingSeconds();
+
   timeEl.textContent = format(remaining);
   modeEl.textContent =
-    current.state.type === "study" ? "Study (3h)" : "Rest (30m)";
-  
-  console.log("Updated timer:", timeEl.textContent, modeEl.textContent);
+    current.state.type === "study"
+      ? "Study"
+      : "Rest";
 
+  // aviso suave al agotarse un bloque
   if (remaining === 0) {
     playBeep(current.state.type === "study" ? 700 : 900);
   }
@@ -97,44 +90,30 @@ function render() {
 // ---------------- BACKEND SYNC ----------------
 
 async function fetchStatus() {
-  try {
-    const res = await fetch(`${API_BASE}/pomodoro/status`);
-    const data = await res.json();
+  const res = await fetch(`${API_BASE}/pomodoro/status`);
+  const data = await res.json();
 
-    if (!data || !data.pomodoro_id) {
-      current = { pomodoro_id: null, state: null };
-      return;
-    }
-
-    current.pomodoro_id = data.pomodoro_id;
-    current.state = data.state;
-  } catch (error) {
-    console.error("Error fetching status:", error);
+  if (!data || !data.pomodoro_id) {
     current = { pomodoro_id: null, state: null };
+    return;
   }
+
+  current.pomodoro_id = data.pomodoro_id;
+  current.state = data.state;
 }
 
 // ---------------- ACTIONS ----------------
 
 async function startPomodoro() {
-  console.log("Start button clicked!");
   initAudio();
 
-  try {
-    console.log("Calling API:", `${API_BASE}/pomodoro/start`);
-    const res = await fetch(
-      `${API_BASE}/pomodoro/start?ref_type=general&ref_id=0`,
-      { method: "POST" }
-    );
-    
-    console.log("Response status:", res.status);
-    const data = await res.json();
-    console.log("Response data:", data);
+  await fetch(
+    `${API_BASE}/pomodoro/start?ref_type=general&ref_id=0`,
+    { method: "POST" }
+  );
 
-    await fetchStatus();
-  } catch (error) {
-    console.error("Error starting pomodoro:", error);
-  }
+  await fetchStatus();
+  render();
 }
 
 async function stopAndSwitch() {
@@ -148,7 +127,11 @@ async function stopAndSwitch() {
     { method: "POST" }
   );
 
+  // 🔴 tras el switch, el backend devuelve:
+  // - nuevo started
+  // - remaining heredado
   await fetchStatus();
+  render();
 }
 
 async function endPomodoro() {
@@ -160,6 +143,7 @@ async function endPomodoro() {
   );
 
   current = { pomodoro_id: null, state: null };
+  render();
 }
 
 // ---------------- LOOP ----------------
@@ -167,9 +151,7 @@ async function endPomodoro() {
 function startUI() {
   fetchStatus().then(() => {
     render();
-    uiInterval = setInterval(() => {
-      render();
-    }, 1000);
+    uiInterval = setInterval(render, 1000);
   });
 }
 
