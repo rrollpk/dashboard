@@ -54,6 +54,8 @@ const startBtn = document.getElementById("startBtn");
 const stopBtn  = document.getElementById("stopBtn");
 const endBtn   = document.getElementById("endBtn");
 
+console.log("Pomodoro elements:", { timeEl, modeEl, startBtn, stopBtn, endBtn });
+
 // ---------------- CORE LOGIC ----------------
 
 function getRemainingSeconds() {
@@ -71,9 +73,12 @@ function getRemainingSeconds() {
 }
 
 function render() {
+  console.log("Rendering - current state:", current);
+  
   if (!current.state) {
     timeEl.textContent = "--:--";
     modeEl.textContent = "Idle";
+    console.log("No active pomodoro");
     return;
   }
 
@@ -81,6 +86,8 @@ function render() {
   timeEl.textContent = format(remaining);
   modeEl.textContent =
     current.state.type === "study" ? "Study (3h)" : "Rest (30m)";
+  
+  console.log("Updated timer:", timeEl.textContent, modeEl.textContent);
 
   if (remaining === 0) {
     playBeep(current.state.type === "study" ? 700 : 900);
@@ -90,29 +97,44 @@ function render() {
 // ---------------- BACKEND SYNC ----------------
 
 async function fetchStatus() {
-  const res = await fetch(`${API_BASE}/pomodoro/status`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_BASE}/pomodoro/status`);
+    const data = await res.json();
 
-  if (!data || !data.pomodoro_id) {
+    if (!data || !data.pomodoro_id) {
+      current = { pomodoro_id: null, state: null };
+      return;
+    }
+
+    current.pomodoro_id = data.pomodoro_id;
+    current.state = data.state;
+  } catch (error) {
+    console.error("Error fetching status:", error);
     current = { pomodoro_id: null, state: null };
-    return;
   }
-
-  current.pomodoro_id = data.pomodoro_id;
-  current.state = data.state;
 }
 
 // ---------------- ACTIONS ----------------
 
 async function startPomodoro() {
+  console.log("Start button clicked!");
   initAudio();
 
-  await fetch(
-    `${API_BASE}/pomodoro/start?ref_type=general&ref_id=0`,
-    { method: "POST" }
-  );
+  try {
+    console.log("Calling API:", `${API_BASE}/pomodoro/start`);
+    const res = await fetch(
+      `${API_BASE}/pomodoro/start?ref_type=general&ref_id=0`,
+      { method: "POST" }
+    );
+    
+    console.log("Response status:", res.status);
+    const data = await res.json();
+    console.log("Response data:", data);
 
-  await fetchStatus();
+    await fetchStatus();
+  } catch (error) {
+    console.error("Error starting pomodoro:", error);
+  }
 }
 
 async function stopAndSwitch() {
