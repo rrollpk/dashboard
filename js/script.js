@@ -1,50 +1,78 @@
 // ---------------- TASKS ----------------
 
-const API_URL = "https://api-dashboard-production-fc05.up.railway.app/task/log/today";
+const API_URL = "https://api-dashboard-production-fc05.up.railway.app/task/today";
 const API_UPDATE_URL = "https://api-dashboard-production-fc05.up.railway.app/tasks/log/today/status";
+
+
 const taskList = document.getElementById("tasks");
+
+const sections = {
+  morning: createSection("Morning"),
+  afternoon: createSection("Afternoon"),
+  night: createSection("Night")
+};
+
+Object.values(sections).forEach(section => taskList.appendChild(section));
+
+function createSection(titleText) {
+  const section = document.createElement("div");
+  section.classList.add("task-section");
+
+  const title = document.createElement("h3");
+  title.textContent = titleText;
+
+  const ul = document.createElement("ul");
+  ul.classList.add("task-list");
+
+  section.appendChild(title);
+  section.appendChild(ul);
+
+  return section;
+}
+
 
 // Cargar tareas de hoy
 fetch(API_URL)
   .then(res => res.json())
   .then(tasks => {
-    console.log("Tasks recibidas:", tasks); // 👈 Debug
-    tasks.forEach(task => {
-      console.log(`Task ${task.task_id}: completed =`, task.completed, typeof task.completed); // 👈 Debug
-      const li = document.createElement("li");
-      li.classList.add("task-item");
-      li.dataset.taskId = task.task_id;
+  tasks.forEach(task => {
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = Boolean(task.completed); // 👈 Forzar a boolean
-      checkbox.dataset.taskId = task.task_id;
+    const li = document.createElement("li");
+    li.classList.add("task-item");
+    li.dataset.taskId = task.task_id;
 
-      const label = document.createElement("span");
-      label.textContent = task.name.trim();
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = Boolean(task.completed);
+    checkbox.dataset.taskId = task.task_id;
 
-      if (task.completed) { // 👈 Esto también debería marcar como completed
-        li.classList.add("completed");
-      }
+    const label = document.createElement("span");
+    label.textContent = task.name.trim();
 
-      checkbox.addEventListener("change", () => {
-        const taskId = Number(checkbox.dataset.taskId); // 👈 int real
-        const completed = checkbox.checked;              // 👈 bool real
+    if (task.completed) {
+      li.classList.add("completed");
+    }
 
-        // UI optimista
-        li.classList.toggle("completed", completed);
+    checkbox.addEventListener("change", () => {
+      const taskId = Number(checkbox.dataset.taskId);
+      const completed = checkbox.checked;
 
-        updateTask(taskId, completed);
-      });
-
-      li.appendChild(checkbox);
-      li.appendChild(label);
-      taskList.appendChild(li);
+      li.classList.toggle("completed", completed);
+      updateTask(taskId, completed);
     });
-  })
+
+    li.appendChild(checkbox);
+    li.appendChild(label);
+
+    const context = task.day_context; // 👈 CLAVE
+    sections[context].querySelector("ul").appendChild(li);
+
+  });
+})
   .catch(err => {
     console.error("Error cargando tasks:", err);
-  });
+  })
+
 
 // ---------------- API WRITE ----------------
 

@@ -23,13 +23,17 @@
     <input type="radio" name="tab" id="tab7">
 
     <div class="tab-labels">
-      <label for="tab1">Tasks</label>
-      <label for="tab2">Daily Notes and Open Projects</label>
-      <label for="tab3">Pomodoro</label>
-      <label for="tab4">Gym</label>
-      <label for="tab5">Extra</label>
-      <label for="tab6">Shopping</label>
-      <label for="tab7">Expenses</label>
+      <label for="tab1">Home</label>
+      <label for="tab2">Schedule</label>
+      <label for="tab3">Focus</label>
+      <label for="tab4">Intel</label>
+      <label for="tab5">RSS</label>
+      <label for="tab6">Healthcare</label>
+      <label for="tab7">Finances</label>
+      <label for="tab8">Leisure</label>
+      <label for="tab9">Plaza</label>
+      <label for="tab10">System</label>
+      
     </div>
 
     <div class="tab-content">
@@ -48,7 +52,72 @@
         </div>
       </div>
 
+      <!-- POMODORO TAB -->
       <div class="content c2">
+        <div class="pomodoro-layout">
+          <!-- LEFT SIDE: TIMER -->
+          <div class="pomodoro-timer-side">
+            <!-- START FORM -->
+            <div id="startForm" class="pomodoro-section">
+              <h2>Start Pomodoro</h2>
+              <div class="form-group">
+                <label>Initial Focus</label>
+                <input type="text" id="focusRefType" placeholder="task/project/manual" value="manual">
+                <input type="number" id="focusRefId" placeholder="ID (0 for manual)" value="0">
+              </div>
+              <div class="form-group">
+                <label>Expectations (ref_type, ref_id, weight)</label>
+                <div id="expectationsList"></div>
+                <button id="addExpectationBtn" class="btn-small">+ Add Expectation</button>
+              </div>
+              <button id="startPomodoroBtn" class="btn-primary">Start Session</button>
+            </div>
+
+            <!-- ACTIVE POMODORO -->
+            <div id="activePomodoro" class="pomodoro-section" style="display:none;">
+              <div class="pomodoro-card">
+                <h2 id="mode">Study</h2>
+                <div id="time">--:--</div>
+                <div class="focus-display">
+                  <span>Focus: </span>
+                  <span id="currentFocus">--</span>
+                </div>
+              </div>
+
+              <div class="controls">
+                <button id="switchBtn" class="btn-primary">Switch Mode</button>
+                <button id="changeFocusBtn" class="btn-secondary">Change Focus</button>
+                <button id="endBtn" class="btn-danger">End Session</button>
+              </div>
+
+              <!-- CHANGE FOCUS FORM -->
+              <div id="changeFocusForm" style="display:none;" class="form-inline">
+                <input type="text" id="newFocusRefType" placeholder="ref_type">
+                <input type="number" id="newFocusRefId" placeholder="ref_id">
+                <button id="submitFocusBtn" class="btn-small">Update</button>
+                <button id="cancelFocusBtn" class="btn-small">Cancel</button>
+              </div>
+            </div>
+
+            <!-- TODAY'S HISTORY -->
+            <div class="pomodoro-section">
+              <h3>Today's Pomodoros</h3>
+              <div id="todayPomodoros"></div>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE: PROJECTS -->
+          <div class="pomodoro-projects-side">
+            <div class="pomodoro-section">
+              <h2>Projects & Tasks</h2>
+              <p class="hint">Click a project to quick-start a pomodoro</p>
+              <ul id="pomodoroProjects"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content c3">
         <div class="box">
           <h2>Daily Notes</h2>
           <textarea id="dailyNotes" placeholder="No daily planning setted"></textarea>
@@ -56,19 +125,6 @@
         <div class="box">
           <h2>Open  Projects</h2>
           <ul id="projects"></ul>
-        </div>
-      </div>
-      <!-- POMODORO TAB -->
-      <div class="content c3">
-        <div class="pomodoro-card">
-          <h2 id="mode">Idle</h2>
-          <div id="time">--:--</div>
-
-          <div class="controls">
-            <button id="startBtn">Start</button>
-            <button id="stopBtn">Switch</button>
-            <button id="endBtn">End</button>
-          </div>
         </div>
       </div>
       
@@ -93,8 +149,12 @@
 
 
 <script src="js\script.js"></script>
+<script src="js\project.js"></script>
 <script src="js\calendar.js"></script>
 <script src="js\pomodoro.js"></script>
 
 </body>
 </html>
+
+
+
