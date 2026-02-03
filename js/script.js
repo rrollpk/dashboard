@@ -1,7 +1,7 @@
 // ---------------- TASKS ----------------
 
 const API_URL = "https://api-dashboard-production-fc05.up.railway.app/task/today";
-const API_UPDATE_URL = "https://api-dashboard-production-fc05.up.railway.app/tasks/log/today/status";
+const API_UPDATE_URL = "https://api-dashboard-production-fc05.up.railway.app/task/log/today/status";
 
 
 const taskList = document.getElementById("tasks");
@@ -13,6 +13,8 @@ const sections = {
 };
 
 Object.values(sections).forEach(section => taskList.appendChild(section));
+
+
 
 function createSection(titleText) {
   const section = document.createElement("div");

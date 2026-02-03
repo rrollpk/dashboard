@@ -391,3 +391,12 @@ input[type="checkbox"] {
 .error {
   color: #dc3545;
 }
+
+.task-section.collapsed .task-list {
+    display: none;
+}
+
+.task-section-title {
+    cursor: pointer;
+    user-select: none;
+}
