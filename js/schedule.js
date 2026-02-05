@@ -8,7 +8,7 @@ let draggedTask = null;
 const OccurrenceSections = {
     morning: createOccurrenceSection("Morning", "morning"),
     afternoon: createOccurrenceSection("Afternoon", "afternoon"),
-    night: createOccurrenceSection("Night", "night")
+    evening: createOccurrenceSection("Evening", "evening")
 }
 
 Object.values(OccurrenceSections).forEach(section => taskList.appendChild(section));
@@ -17,7 +17,7 @@ function getOccurrence() {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return "morning";
     if (hour >= 12 && hour < 18) return "afternoon";
-    return "night";
+    return "evening";
 }
 
 function createOccurrenceSection(titleText, occurrence) {
@@ -62,7 +62,7 @@ function renderTask(task) {
     const li = document.createElement("li");
     li.classList.add("task-item");
     li.draggable = true;
-    li.dataset.taskId = task.task_id;
+    li.dataset.taskId = task.occurrences_id;
     li.dataset.position = task.position;
     li.dataset.occurrence = task.day_context;
     
@@ -72,7 +72,7 @@ function renderTask(task) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = Boolean(task.completed);
-    checkbox.dataset.taskId = task.task_id;
+    checkbox.dataset.taskId = task.occurrences_id;
 
     li.appendChild(checkbox);
     li.appendChild(task_span);
@@ -88,7 +88,7 @@ function renderTask(task) {
     checkbox.addEventListener("change", () => {
         const completed = checkbox.checked;
         li.classList.toggle("completed", completed);
-        updateTaskCheckbox(task.task_id, completed);
+        updateTaskCheckbox(task.occurrences_id, completed);
     });
 
     const context = task.day_context; 
@@ -123,7 +123,7 @@ function updateTaskCheckbox(taskId, completed) {
   fetch(API_CHECKBOX, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ task_id: taskId, completed })
+    body: JSON.stringify({ occurrences_id: taskId, completed })
   }).catch(err => {
     console.error("Error updating task", err);
   });
@@ -185,7 +185,7 @@ function handleDrop(e) {
     }
     
     const payload = {
-        task_id: draggedTask.id,
+        occurrences_id: draggedTask.id,
         before_id: before_id,
         after_id: after_id
     };
