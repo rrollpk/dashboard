@@ -1,6 +1,7 @@
 const API = "https://api-dashboard-production-fc05.up.railway.app/task/today";
 const API_CHECKBOX = "https://api-dashboard-production-fc05.up.railway.app/task/today/checkbox";
 const API_MOVE = "https://api-dashboard-production-fc05.up.railway.app/task/today/move";
+const API_REFRESH = "https://api-dashboard-production-fc05.up.railway.app/task/today/refresh_occurrences";
 const taskList = document.getElementById("task");
 
 let draggedTask = null;
@@ -106,17 +107,28 @@ function showOccurrenceTasks(activeContext) {
 }
 
 
-fetch(API)
-  .then(res => {
-    if (!res.ok) throw new Error("Error loading tasks");
-    return res.json();
-  })
-  .then(tasks => {
+// Función para refrescar occurrences y luego cargar tasks
+function loadTasks() {
+  return fetch(API_REFRESH, { method: "POST" })
+    .then(res => res.json())
+    .catch(err => {
+      console.warn("Refresh occurrences warning:", err);
+      // Continuar aunque falle el refresh
+    })
+    .then(() => fetch(API))
+    .then(res => {
+      if (!res.ok) throw new Error("Error loading tasks");
+      return res.json();
+    })
+    .then(tasks => {
       renderTasks(tasks);
-
       const activeContext = getOccurrence();
       showOccurrenceTasks(activeContext);
-  })
+    });
+}
+
+// Cargar tasks al inicio
+loadTasks();
 
 
 function updateTaskCheckbox(taskId, completed) {
@@ -124,7 +136,13 @@ function updateTaskCheckbox(taskId, completed) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ occurrences_id: taskId, completed })
-  }).catch(err => {
+  })
+  .then(() => {
+    // Refrescar occurrences después de completar una tarea
+    // (por si hay tareas que deben moverse)
+    return loadTasks();
+  })
+  .catch(err => {
     console.error("Error updating task", err);
   });
 }
