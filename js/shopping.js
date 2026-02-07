@@ -68,10 +68,13 @@ async function addToList(item) {
         const res = await fetch(API_INSERT, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify([item])
+            body: JSON.stringify({ items: [item] })
         });
 
-        if (!res.ok) throw new Error("Failed to add item");
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Failed to add item: ${errorText}`);
+        }
         await loadShoppingList();
     } catch (err) {
         console.error("Error adding item:", err);
@@ -84,10 +87,13 @@ async function removeFromList(item) {
         const res = await fetch(API_DELETE, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify([item])
+            body: JSON.stringify({ items: [item] })
         });
 
-        if (!res.ok) throw new Error("Failed to remove item");
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Failed to remove item: ${errorText}`);
+        }
         await loadShoppingList();
     } catch (err) {
         console.error("Error removing item:", err);
