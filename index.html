@@ -135,7 +135,21 @@
         <p>Contenido de la Tab 5</p>
       </div>
       <div class="content c6">
-        <p>Contenido de la Tab 6</p>
+        <div class="shopping-container">
+          <div class="shopping-list-section">
+            <h2>Shopping List</h2>
+            <button id="addItemBtn" class="btn-primary">+ Add Items</button>
+            
+            <!-- Buscador (oculto por defecto) -->
+            <div id="itemSearchBox" class="search-box" style="display:none;">
+              <input type="text" id="searchInput" placeholder="Search items...">
+              <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <!-- Lista actual -->
+            <ul id="shoppingList" class="shopping-list"></ul>
+          </div>
+        </div>
       </div>
       <div class="content c7">
         <p>Contenido de la Tab 7</p>
@@ -152,6 +166,7 @@
 <script src="js\project.js"></script>
 <script src="js\calendar.js"></script>
 <script src="js\pomodoro.js"></script>
+<script src="js\shopping.js"></script>
 
 </body>
 </html>
