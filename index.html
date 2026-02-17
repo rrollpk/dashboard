@@ -4,8 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
+  
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="core/styles/themes.css">
+  <link rel="stylesheet" href="core/styles/core.css">
+  
+  <!-- Old styles (temporal, hasta migrar) -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="calendar-styles.css">
+  <link rel="stylesheet" href="home/home.css">
+  <link rel="stylesheet" href="schedule/schedule.css">
+  <link rel="stylesheet" href="focus/focus.css">
+  <link rel="stylesheet" href="intel/intel.css">
+  <link rel="stylesheet" href="healthcare/healthcare.css">
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  
+  <!-- Old scripts (temporal) -->
+  <script defer src="js/schedule.js"></script>
+  <script defer src="js/project.js"></script>
+  <script defer src="js/calendar.js"></script>
+  <script defer src="js/pomodoro.js"></script>
+  <script defer src="js/shopping.js"></script>
+  <script defer src="js/knowledge.js"></script>
 </head>
 
 <body>
@@ -39,10 +63,17 @@
     <div class="tab-content">
 
       <div class="content c1">
-        <div class="box">  <h2>Daily Tasks</h2>
+        <div class="theme-selector-container">
+          <label for="themeSelect">Theme:</label>
+          <select id="themeSelect"></select>
+        </div>
+      </div>
+
+      <div class="content c2">
+        <div class="box tasks-box">  <h2>Daily Tasks</h2>
           <ul id="task"></ul>
         </div>
-        <div class="box">
+        <div class="box calendar-box">
           <h2 id="scheduleDate">Calendar</h2>
           <div class="schedule">
             <div class="schedule-container">
@@ -52,8 +83,7 @@
         </div>
       </div>
 
-      <!-- POMODORO TAB -->
-      <div class="content c2">
+      <div class="content c3">
         <div class="pomodoro-layout">
           <!-- LEFT SIDE: TIMER -->
           <div class="pomodoro-timer-side">
@@ -99,37 +129,52 @@
               </div>
             </div>
 
-            <!-- TODAY'S HISTORY -->
             <div class="pomodoro-section">
               <h3>Today's Pomodoros</h3>
               <div id="todayPomodoros"></div>
             </div>
           </div>
 
-          <!-- RIGHT SIDE: PROJECTS -->
           <div class="pomodoro-projects-side">
             <div class="pomodoro-section">
-              <h2>Projects & Tasks</h2>
+              <h2>Active Projects & Tasks</h2>
               <p class="hint">Click a project to quick-start a pomodoro</p>
               <ul id="pomodoroProjects"></ul>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="content c3">
-        <div class="box">
-          <h2>Daily Notes</h2>
-          <textarea id="dailyNotes" placeholder="No daily planning setted"></textarea>
-        </div>
-        <div class="box">
-          <h2>Open  Projects</h2>
-          <ul id="projects"></ul>
-        </div>
-      </div>
       
       <div class="content c4">
-        <p>Gym tracking - TODO</p>
+        <div class="knowledge-layout">
+          <aside id="knowledgeSidebar" class="knowledge-sidebar">
+            <div class="knowledge-sidebar-header">
+              <button id="knowledgeToggle" class="btn-small knowledge-toggle">☰</button>
+              
+            </div>
+
+            <div class="knowledge-filters">
+              <label class="knowledge-label">Project</label>
+              <select id="projectSelect"></select>
+
+              <label class="knowledge-label">Concepts</label>
+              <div id="conceptTree" class="concept-tree"></div>
+
+              <label class="knowledge-label">Mode</label>
+              <select id="modeSelect">
+                <option value="">Normal</option>
+                <option value="exam">Exam</option>
+              </select>
+
+              <label class="knowledge-label">Block Types</label>
+              <div id="blockTypeFilters"></div>
+            </div>
+          </aside>
+
+          <section class="knowledge-content">
+            <div id="knowledgeViewer" class="knowledge-viewer"></div>
+          </section>
+        </div>
       </div>
       <div class="content c5">
         <p>Contenido de la Tab 5</p>
@@ -154,6 +199,17 @@
       <div class="content c7">
         <p>Contenido de la Tab 7</p>
       </div>
+      <div class="content c8">
+        <p>Contenido de la Tab 8</p>
+
+      </div>
+      <div class="content c9">
+        <p>Contenido de la Tab 9</p>
+      </div>
+      <div class="content c10">
+        <p>Contenido de la Tab 10</p>
+      </div>
+
     </div>
 
   </div>
@@ -162,11 +218,6 @@
 
 
 
-<script src="js\schedule.js"></script>
-<script src="js\project.js"></script>
-<script src="js\calendar.js"></script>
-<script src="js\pomodoro.js"></script>
-<script src="js\shopping.js"></script>
 
 </body>
 </html>

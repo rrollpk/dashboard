@@ -1,0 +1,20 @@
+.theme-selector-container {
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border: var(--border-thin) solid var(--border-color);
+  max-width: 300px;
+}
+
+.theme-selector-container label {
+  margin-bottom: 0;
+  font-size: var(--font-base);
+}
+
+.theme-selector-container select {
+  flex: 1;
+  width: auto;
+}

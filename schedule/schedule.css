@@ -1,0 +1,31 @@
+/* SCHEDULE TAB LAYOUT */
+#tab2:checked ~ .tab-content .c2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  grid-template-areas: 
+    ". calendar calendar calendar"
+    "tasks calendar calendar calendar"
+    "tasks calendar calendar calendar";
+}
+
+.tasks-box {
+  grid-area: tasks;
+}
+
+.calendar-box {
+  grid-area: calendar;
+}
+
+/* TASK SECTIONS */
+.task-section.collapsed .task-list {
+    display: none;
+}
+
+.task-section-title {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Aquí irían más estilos del calendario, tasks, etc. */

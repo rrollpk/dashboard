@@ -1,0 +1,23 @@
+/* DARK */
+:root,
+:root[data-theme='dark'] {
+    --bg-primary: #34304A;
+    --bg-secondary: #282539;
+    --bg-tertiary: #3d3752;
+    --bg-hover: #ffffff0d;
+
+    --text-primary: #ffffff;
+    --text-secondary: #ffffffcc;
+    --text-tertiary: #ffffff99;
+
+    --accent-primary: #5a4fcf;
+    --accent-hover: #4a3fb8;
+    --accent-light: #5a4fcf33;
+    --accent-gradient: linear-gradient(135deg, #5a4fcf 0%, #4a3fb8 100%);
+
+    --border-color: #ffffff1a;
+    --shadow-sm: 0 2px 4px #0000004d;
+    --shadow-md: 0 4px 6px #0000004d;
+    --shadow-lg: 0 8px 16px #00000066;
+}
+
