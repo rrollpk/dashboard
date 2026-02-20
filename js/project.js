@@ -1,6 +1,6 @@
 // ---------------- PROJECTS ----------------
 
-const PROJECTS_URL = "https://api-dashboard-production-fc05.up.railway.app/projects";
+const PROJECTS_URL = "https://api-dashboard-production-fc05.up.railway.app/projects/";
 const projectsList = document.getElementById("projects");
 const pomodoroProjectsList = document.getElementById("pomodoroProjects");
 

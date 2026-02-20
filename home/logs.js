@@ -1,4 +1,4 @@
-const logs_API = 'https://api-dashboard-production-fc05.up.railway.app/logs'
+const logs_API = 'https://api-dashboard-production-fc05.up.railway.app/logs/'
 
 async function loadLogs() {
   try {
