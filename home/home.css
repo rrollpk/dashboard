@@ -1,20 +1,95 @@
+#tab1:checked ~ .tab-content .c1 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 5vh repeat(5, 1fr);
+  gap: var(--spacing-lg);
+  height: 100%;
+  max-height: 100vh;
+  grid-template-areas: 
+    "image-container image-container . . language-selector theme-selector"
+    "image-container image-container . . logs logs"
+    "image-container image-container weather weather logs logs"
+    "featured-news featured-news featured-content featured-content featured-content featured-content"
+    "featured-news featured-news featured-content featured-content featured-content featured-content"
+    "featured-news featured-news featured-content featured-content featured-content featured-content";
+}
+
 .theme-selector-container {
-  padding: var(--spacing-md);
-  background: var(--bg-secondary);
+  grid-area: theme-selector;
+}
+
+.language-selector-container {
+  grid-area: language-selector;
+}
+
+.image-container {
+  grid-area: image-container;
+  overflow: hidden;
   border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#featured-news {
+  grid-area: featured-news;
+}
+
+.featured-content {
+  grid-area: featured-content;
+}
+
+.logs {
+  grid-area: logs;
+}
+
+.weather-widget {
+  grid-area: weather;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: var(--spacing-md);
-  border: var(--border-thin) solid var(--border-color);
-  max-width: 300px;
+  align-items: center;
+  grid-template-areas: 
+  "weather-hour weather-hour"
+  "weather-temp weather-description";
 }
 
-.theme-selector-container label {
-  margin-bottom: 0;
-  font-size: var(--font-base);
+
+
+.weather-temp {
+  grid-area: weather-temp;
+  font-size: var(--font-2xl);
+  font-weight: bold;
+  color: var(--accent-primary);
 }
 
-.theme-selector-container select {
-  flex: 1;
-  width: auto;
+.weather-description {
+    grid-area: weather-description;
+}
+
+.weather-hour {
+    grid-area: weather-hour;
+}
+
+
+/* FEATURED NEWS */
+
+#featuredNews a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+#featuredNews a:last-child {
+    border-bottom: none;
+}
+
+#featuredNews a:hover {
+    background: var(--accent-light);
+    text-decoration: underline;
 }

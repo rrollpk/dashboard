@@ -24,12 +24,16 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   
   <!-- Old scripts (temporal) -->
-  <script defer src="js/schedule.js"></script>
+  <script defer src="home/weather-time.js"></script>
+  <script defer src="home/logs.js"></script>
+  <script defer src="home/featured-rss.js"></script>
+  <script defer src="home/theme-switcher.js"></script>
+  <script defer src="schedule/schedule.js"></script>
   <script defer src="js/project.js"></script>
   <script defer src="js/calendar.js"></script>
-  <script defer src="js/pomodoro.js"></script>
-  <script defer src="js/shopping.js"></script>
-  <script defer src="js/knowledge.js"></script>
+  <script defer src="focus/pomodoro.js"></script>
+  <script defer src="healthcare/shopping.js"></script>
+  <script defer src="intel/intel.js"></script>
 </head>
 
 <body>
@@ -64,8 +68,33 @@
 
       <div class="content c1">
         <div class="theme-selector-container">
-          <label for="themeSelect">Theme:</label>
+          <label for="themeSelect"></label>
           <select id="themeSelect"></select>
+        </div>
+        <div class="language-selector-container">
+          <label for="languageSelect"></label>
+          <select id="languageSelect"></select>
+        </div>
+        <div class="image-container">
+          <img src="assets/filosofo-en-meditacion-1.jpg" alt="Filósofo en meditación">
+        </div>
+        <div class="box" id="featured-news">
+          <h3>Featured News</h3>
+          <div id="featuredNews"></div>
+        </div>
+        <div class="box featured-content"> 
+          <h3>Featured Content</h3> 
+        </div>
+        <div class="box logs">
+          <h3>Logs</h3>
+          <ul id="logs" class="log-list"></ul>
+
+        </div>
+          
+        <div class="box weather-widget">
+            <div class="weather-temp">--°C</div>
+            <div class="weather-description">Loading...</div>
+            <div class="weather-hour">--:--</div>
         </div>
       </div>
 
@@ -103,7 +132,6 @@
               <button id="startPomodoroBtn" class="btn-primary">Start Session</button>
             </div>
 
-            <!-- ACTIVE POMODORO -->
             <div id="activePomodoro" class="pomodoro-section" style="display:none;">
               <div class="pomodoro-card">
                 <h2 id="mode">Study</h2>
@@ -120,7 +148,6 @@
                 <button id="endBtn" class="btn-danger">End Session</button>
               </div>
 
-              <!-- CHANGE FOCUS FORM -->
               <div id="changeFocusForm" style="display:none;" class="form-inline">
                 <input type="text" id="newFocusRefType" placeholder="ref_type">
                 <input type="number" id="newFocusRefId" placeholder="ref_id">
@@ -177,7 +204,7 @@
         </div>
       </div>
       <div class="content c5">
-        <p>Contenido de la Tab 5</p>
+        <p>EN PROCESO</p>
       </div>
       <div class="content c6">
         <div class="shopping-container">
@@ -185,13 +212,11 @@
             <h2>Shopping List</h2>
             <button id="addItemBtn" class="btn-primary">+ Add Items</button>
             
-            <!-- Buscador (oculto por defecto) -->
             <div id="itemSearchBox" class="search-box" style="display:none;">
               <input type="text" id="searchInput" placeholder="Search items...">
               <div id="searchResults" class="search-results"></div>
             </div>
 
-            <!-- Lista actual -->
             <ul id="shoppingList" class="shopping-list"></ul>
           </div>
         </div>

@@ -4,6 +4,7 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: var(--spacing-lg);
+  min-height: 100vh;
   grid-template-areas: 
     ". calendar calendar calendar"
     "tasks calendar calendar calendar"
