@@ -91,6 +91,58 @@ async function loadConcepts() {
   renderConceptTree(concepts);
 }
 
+// REVISAR QUE ESTO ES LO DEL BOTON DE ADD CONCEPT
+
+document.getElementById('addConceptBtn').addEventListener('click', async () => {
+    const name = prompt('Nombre del nuevo concepto:');
+    if (!name) return;
+
+    const parentId = prompt('ID del concepto padre (deja vacío para ninguno):');
+    const parent_concept_id = parentId ? parseInt(parentId) : null;
+
+    const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/new`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, parent_concept_id: parentId ? parseInt(parentId) : null })
+    });
+
+    if (res.ok) {
+        loadConcepts();
+    } else {
+        alert('Error creando concepto');
+    }
+});
+
+document.getElementById('addBlockBtn').addEventListener('click', async () => {
+    if (!knowledgeState.concept_id) {
+        alert('Selecciona un concepto primero');
+        return;
+    }
+
+    const content = prompt('Contenido del nuevo bloque:');
+    if (!content) return;
+
+    const block_type = prompt('Tipo de bloque (definition, intuition, formula, etc):');
+    if (!block_type) return;
+
+    const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/new`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            concept_id: knowledgeState.concept_id,
+            content,
+            block_type,
+            project_id: knowledgeState.project_id || null,
+            mode: knowledgeState.mode || null
+        })
+    });
+
+    if (res.ok) {
+        fetchKnowledge();
+    } else {
+        alert('Error creando bloque');
+    }
+});
 
 function renderConceptTree(concepts) {
   conceptTree.innerHTML = "";

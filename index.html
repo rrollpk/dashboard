@@ -24,6 +24,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   
   <!-- Old scripts (temporal) -->
+  <script defer src="core/core.js"></script>
   <script defer src="home/weather-time.js"></script>
   <script defer src="home/logs.js"></script>
   <script defer src="home/featured-rss.js"></script>
@@ -49,6 +50,9 @@
     <input type="radio" name="tab" id="tab5">
     <input type="radio" name="tab" id="tab6">
     <input type="radio" name="tab" id="tab7">
+    <input type="radio" name="tab" id="tab8">
+    <input type="radio" name="tab" id="tab9">
+    <input type="radio" name="tab" id="tab10">
 
     <div class="tab-labels">
       <label for="tab1">Home</label>
@@ -177,7 +181,9 @@
           <aside id="knowledgeSidebar" class="knowledge-sidebar">
             <div class="knowledge-sidebar-header">
               <button id="knowledgeToggle" class="btn-small knowledge-toggle">☰</button>
-              
+              <!-- Agrega esto en tu HTML, cerca de conceptTree -->
+              <button id="addConceptBtn">Nuevo concepto</button>
+              <button id="addBlockBtn">Nuevo bloque</button>
             </div>
 
             <div class="knowledge-filters">

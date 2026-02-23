@@ -93,3 +93,10 @@
     background: var(--accent-light);
     text-decoration: underline;
 }
+
+.logs a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background 0.2s;
+}
