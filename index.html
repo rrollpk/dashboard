@@ -168,9 +168,11 @@
 
           <div class="pomodoro-projects-side">
             <div class="pomodoro-section">
-              <h2>Active Projects & Tasks</h2>
+              <h2>Index Projects</h2>
+              <h3>Active Projects</h3>
               <p class="hint">Click a project to quick-start a pomodoro</p>
               <ul id="pomodoroProjects"></ul>
+              <h3>Archived Projects</h3>
             </div>
           </div>
         </div>
@@ -178,29 +180,48 @@
       
       <div class="content c4">
         <div class="knowledge-layout">
+          <div id="relationsModal" class="relations-modal" style="display:none;">
+            <div class="relations-modal-content"></div>
+              <button id="closeRelationsModal">Cerrar</button>
+              <h2>Relaciones</h2>
+              <div id="relationsGraph"></div>
+            </div>
+          </div>
           <aside id="knowledgeSidebar" class="knowledge-sidebar">
             <div class="knowledge-sidebar-header">
               <button id="knowledgeToggle" class="btn-small knowledge-toggle">☰</button>
               <!-- Agrega esto en tu HTML, cerca de conceptTree -->
-              <button id="addConceptBtn">Nuevo concepto</button>
-              <button id="addBlockBtn">Nuevo bloque</button>
+              <button id="addConceptBtn">New Concept</button>
+              <button id="addBlockBtn">New Block</button>
+              <button id="modifyConceptBtn">Modify Contents</button>
+              <button id="modifyBlockBtn">Modify Relations</button>
             </div>
 
             <div class="knowledge-filters">
-              <label class="knowledge-label">Project</label>
-              <select id="projectSelect"></select>
+              <div class="project-filter">
+                <select id="projectSelect"></select>
+              </div>
+              <div class="mode-filter">
 
-              <label class="knowledge-label">Concepts</label>
-              <div id="conceptTree" class="concept-tree"></div>
+                <select id="modeSelect">
+                  <option value="">Mode</option>
+                  <option value="exam">Exam</option>
+                </select>
+              </div>
+              <div class="block-type-filter">
+                <label class="knowledge-label">Block Types</label>
+                <div id="blockTypeFilters"></div>
+              </div>
 
-              <label class="knowledge-label">Mode</label>
-              <select id="modeSelect">
-                <option value="">Normal</option>
-                <option value="exam">Exam</option>
-              </select>
+              <div class="concept-type-filter">
+                <label class="knowledge-label">Concepts</label>
+                <div id="conceptTree" class="concept-tree"></div>
+              </div>
 
-              <label class="knowledge-label">Block Types</label>
-              <div id="blockTypeFilters"></div>
+              
+            
+
+              
             </div>
           </aside>
 

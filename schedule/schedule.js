@@ -242,7 +242,7 @@ function moveTask(payload) {
         return res.json();
     })
     .then(() => {
-        // Recargar tasks para reflejar nuevo orden
+
         fetch(API)
             .then(res => res.json())
             .then(tasks => {

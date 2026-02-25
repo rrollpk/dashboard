@@ -36,7 +36,7 @@ function setupKnowledgeSidebar() {
   toggleBtn.addEventListener("click", () => {
     const collapsed = sidebar.classList.toggle("collapsed");
     layout.classList.toggle("collapsed", collapsed);
-    toggleBtn.textContent = collapsed ? "Show" : "Hide";
+    
   });
 }
 
@@ -94,35 +94,38 @@ async function loadConcepts() {
 // REVISAR QUE ESTO ES LO DEL BOTON DE ADD CONCEPT
 
 document.getElementById('addConceptBtn').addEventListener('click', async () => {
-    const name = prompt('Nombre del nuevo concepto:');
+    const name = prompt('New Concept');
     if (!name) return;
 
-    const parentId = prompt('ID del concepto padre (deja vacío para ninguno):');
-    const parent_concept_id = parentId ? parseInt(parentId) : null;
+    const parent_concept_id = knowledgeState.concept_id || null;
+    console.log("🔵 Parent Concept ID:", parent_concept_id);
+    const project_id = knowledgeState.project_id || null;
+
+    
 
     const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/new`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, parent_concept_id: parentId ? parseInt(parentId) : null })
+        body: JSON.stringify({ name, parent_concept_id, project_id})
     });
 
     if (res.ok) {
         loadConcepts();
     } else {
-        alert('Error creando concepto');
+        alert('Error creating concept');
     }
 });
 
 document.getElementById('addBlockBtn').addEventListener('click', async () => {
     if (!knowledgeState.concept_id) {
-        alert('Selecciona un concepto primero');
+        alert('Select a concept first');
         return;
     }
-
-    const content = prompt('Contenido del nuevo bloque:');
+ 
+    const content = prompt('Content of the new block:');
     if (!content) return;
 
-    const block_type = prompt('Tipo de bloque (definition, intuition, formula, etc):');
+    const block_type = prompt('Block type (definition, intuition, formula, etc):');
     if (!block_type) return;
 
     const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/new`, {
@@ -140,7 +143,7 @@ document.getElementById('addBlockBtn').addEventListener('click', async () => {
     if (res.ok) {
         fetchKnowledge();
     } else {
-        alert('Error creando bloque');
+        alert('Error creating block');
     }
 });
 
@@ -176,6 +179,7 @@ function renderConceptTree(concepts) {
 
         el.classList.add("active");
         knowledgeState.concept_id = c.id;
+        console.log("🔵 Concepto seleccionado:", c.id, c.name);
         fetchKnowledge();
       });
 
@@ -195,11 +199,11 @@ function setupModeSelector() {
     console.log("Updated knowledgeState:", knowledgeState);
     fetchKnowledge();
   });
+
+  
 }
 
-// ===============================
-// BLOCK TYPE FILTERS
-// ===============================
+
 function setupBlockTypeFilters() {
   if (!blockTypeFilters) return;
 
@@ -292,6 +296,7 @@ function renderKnowledge(blocks) {
             <strong>${block.block_type.toUpperCase()}</strong>
             ${block.mode ? `<span class="mode-badge">${block.mode}</span>` : ''}
             <button class="edit-btn" data-block-id="${block.id}">Edit</button>
+            <button class="delete-btn" data-block-id="${block.id}">Delete</button>
         `;
         
         const content = document.createElement('div');
@@ -318,6 +323,9 @@ function renderKnowledge(blocks) {
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', handleEditClick);
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', handleDeleteClick);
     });
 }
 
@@ -386,3 +394,31 @@ async function handleEditClick(event) {
         });
     }
 }
+
+async function handleDeleteClick(event) {
+    const blockId = event.target.dataset.blockId;
+    if (!confirm('Are you sure you want to delete this block?')) return;
+
+    try {
+        const response = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/${blockId}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete');
+
+        // Eliminar del DOM
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (blockDiv) blockDiv.remove();
+
+    } catch (error) {
+        console.error('Error deleting block:', error);
+        alert('Error al eliminar el bloque');
+    }
+}
+
+document.getElementById('modifyBlockBtn').addEventListener('click', () => {
+  document.getElementById('relationsModal').style.display = 'flex';
+});
+
+document.getElementById('closeRelationsModal').addEventListener('click', () => {
+  document.getElementById('relationsModal').style.display = 'none';
+});
