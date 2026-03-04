@@ -17,11 +17,15 @@
   <link rel="stylesheet" href="focus/focus.css">
   <link rel="stylesheet" href="intel/intel.css">
   <link rel="stylesheet" href="healthcare/healthcare.css">
+  <link rel="stylesheet" href="rss/rss.css">
   
   <!-- KaTeX -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Marked (Markdown parser) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   
   <!-- Old scripts (temporal) -->
   <script defer src="core/core.js"></script>
@@ -35,6 +39,7 @@
   <script defer src="focus/pomodoro.js"></script>
   <script defer src="healthcare/shopping.js"></script>
   <script defer src="intel/intel.js"></script>
+  <script defer src="rss/rss.js"></script>
 </head>
 
 <body>
@@ -88,11 +93,34 @@
         </div>
         <div class="box featured-content"> 
           <h3>Featured Content</h3> 
+          <div id="featuredEvents"></div>
         </div>
         <div class="box logs">
-          <h3>Logs</h3>
-          <ul id="logs" class="log-list"></ul>
+          <div id="homeRotator" class="home-rotator" aria-label="Home rotating panels">
+            <div id="homeRotatorTrack" class="home-rotator-track">
+              <section class="home-rotator-panel" aria-label="Logs panel">
+                <h3>Logs</h3>
+                <ul id="logs" class="log-list"></ul>
+              </section>
 
+              <section class="home-rotator-panel" aria-label="AI advice panel">
+                <h3>AI Powered Advice</h3>
+                <div id="homeAdvice" class="home-info-list"></div>
+              </section>
+
+              <section class="home-rotator-panel" aria-label="Focus tips panel">
+                <h3>Focus Tips</h3>
+                <div id="homeFocusTips" class="home-info-list"></div>
+              </section>
+
+              <section class="home-rotator-panel" aria-label="System tips panel">
+                <h3>System Notes</h3>
+                <div id="homeSystemTips" class="home-info-list"></div>
+              </section>
+            </div>
+
+            <div id="homeRotatorDots" class="home-rotator-dots" aria-label="Panel navigation"></div>
+          </div>
         </div>
           
         <div class="box weather-widget">
@@ -103,11 +131,25 @@
       </div>
 
       <div class="content c2">
+        <div class="box month-calendar-box">
+          <div class="month-calendar-header">
+            <button id="monthCalendarPrev" class="month-calendar-nav" title="Previous month">‹</button>
+            <div id="monthCalendarTitle" class="month-calendar-title">Month</div>
+            <button id="monthCalendarNext" class="month-calendar-nav" title="Next month">›</button>
+          </div>
+          <div class="month-calendar-weekdays">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div id="monthCalendarGrid" class="month-calendar-grid"></div>
+        </div>
         <div class="box tasks-box">  <h2>Daily Tasks</h2>
           <ul id="task"></ul>
         </div>
         <div class="box calendar-box">
-          <h2 id="scheduleDate">Calendar</h2>
+          <div class="schedule-header">
+            <h2 id="scheduleDate">Calendar</h2>
+            <button id="scheduleCreateEventBtn" class="schedule-create-btn" title="Create event">+ Event</button>
+          </div>
           <div class="schedule">
             <div class="schedule-container">
               <div id="scheduleHours" class="schedule-hours"></div>
@@ -124,39 +166,42 @@
             <div id="startForm" class="pomodoro-section">
               <h2>Start Pomodoro</h2>
               <div class="form-group">
-                <label>Initial Focus</label>
-                <input type="text" id="focusRefType" placeholder="task/project/manual" value="manual">
-                <input type="number" id="focusRefId" placeholder="ID (0 for manual)" value="0">
-              </div>
-              <div class="form-group">
-                <label>Expectations (ref_type, ref_id, weight)</label>
+                <label>Plan (what will you work on?)</label>
                 <div id="expectationsList"></div>
-                <button id="addExpectationBtn" class="btn-small">+ Add Expectation</button>
+                <div class="exp-add-btns">
+                  <button id="addExpectationBtn" class="btn-small">+ Project/Task</button>
+                  <button id="addCustomExpBtn" class="btn-small btn-small--ghost">+ Custom</button>
+                </div>
               </div>
               <button id="startPomodoroBtn" class="btn-primary">Start Session</button>
             </div>
 
             <div id="activePomodoro" class="pomodoro-section" style="display:none;">
-              <div class="pomodoro-card">
-                <h2 id="mode">Study</h2>
-                <div id="time">--:--</div>
-                <div class="focus-display">
-                  <span>Focus: </span>
-                  <span id="currentFocus">--</span>
+              <div class="dual-timer-row">
+                <div id="studyTimerBlock" class="timer-block timer-study timer-active">
+                  <div class="timer-label">📚 Study</div>
+                  <div id="studyTimerDisplay" class="timer-display">3:00:00</div>
+                </div>
+                <div id="restTimerBlock" class="timer-block timer-rest timer-paused">
+                  <div class="timer-label">☕ Rest</div>
+                  <div id="restTimerDisplay" class="timer-display">30:00</div>
                 </div>
               </div>
 
-              <div class="controls">
-                <button id="switchBtn" class="btn-primary">Switch Mode</button>
-                <button id="changeFocusBtn" class="btn-secondary">Change Focus</button>
-                <button id="endBtn" class="btn-danger">End Session</button>
+              <button id="switchBtn" class="btn-switch-mode">⏸ Pause study · Start rest →</button>
+
+              <div class="focus-display">
+                <span class="focus-label">Focus: </span>
+                <span id="currentFocus">--</span>
               </div>
 
-              <div id="changeFocusForm" style="display:none;" class="form-inline">
-                <input type="text" id="newFocusRefType" placeholder="ref_type">
-                <input type="number" id="newFocusRefId" placeholder="ref_id">
-                <button id="submitFocusBtn" class="btn-small">Update</button>
-                <button id="cancelFocusBtn" class="btn-small">Cancel</button>
+              <div id="expectationsTable" class="expectations-table"></div>
+
+              <div id="changeFocusPanel" class="change-focus-panel" style="display:none;"></div>
+
+              <div class="controls">
+                <button id="changeFocusBtn" class="btn-secondary">Change Focus</button>
+                <button id="endBtn" class="btn-danger">End Block</button>
               </div>
             </div>
 
@@ -168,10 +213,30 @@
 
           <div class="pomodoro-projects-side">
             <div class="pomodoro-section">
-              <h2>Index Projects</h2>
+              <div class="projects-header">
+                <h2>Index Projects</h2>
+                <button id="newProjectBtn" class="kb-btn kb-btn--concept" title="New project">＋ New</button>
+                <button id="projectSchemasBtn" class="kb-btn kb-btn--relations" title="Open project schemas">🧩 Schemas</button>
+              </div>
+
+              <div id="newProjectForm" class="new-project-form" style="display:none;">
+                <input id="newProjectName" type="text" placeholder="Project name" class="new-project-input">
+                <select id="newProjectParent" class="new-project-select"></select>
+                <select id="newProjectType" class="new-project-select">
+                  <option value="project">📁 Project</option>
+                  <option value="task">📄 Task</option>
+                </select>
+                <input id="newProjectDesc" type="text" placeholder="Description (optional)" class="new-project-input">
+                <div class="new-project-actions">
+                  <button id="newProjectSave" class="kb-btn kb-btn--concept">Save</button>
+                  <button id="newProjectCancel" class="kb-btn" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">Cancel</button>
+                </div>
+              </div>
+
               <h3>Active Projects</h3>
               <p class="hint">Click a project to quick-start a pomodoro</p>
               <ul id="pomodoroProjects"></ul>
+
               <h3>Archived Projects</h3>
             </div>
           </div>
@@ -180,21 +245,15 @@
       
       <div class="content c4">
         <div class="knowledge-layout">
-          <div id="relationsModal" class="relations-modal" style="display:none;">
-            <div class="relations-modal-content"></div>
-              <button id="closeRelationsModal">Cerrar</button>
-              <h2>Relaciones</h2>
-              <div id="relationsGraph"></div>
-            </div>
-          </div>
           <aside id="knowledgeSidebar" class="knowledge-sidebar">
             <div class="knowledge-sidebar-header">
-              <button id="knowledgeToggle" class="btn-small knowledge-toggle">☰</button>
-              <!-- Agrega esto en tu HTML, cerca de conceptTree -->
-              <button id="addConceptBtn">New Concept</button>
-              <button id="addBlockBtn">New Block</button>
-              <button id="modifyConceptBtn">Modify Contents</button>
-              <button id="modifyBlockBtn">Modify Relations</button>
+              <button id="knowledgeToggle" class="knowledge-toggle" title="Collapse sidebar">‹</button>
+              <div class="knowledge-sidebar-actions">
+                <button id="addConceptBtn" class="kb-btn kb-btn--concept" title="New Concept or Block">＋ Add</button>
+                <button id="ingestBtn" class="kb-btn kb-btn--ingest" title="Ingest document and get suggestions">↥ Ingest</button>
+                <button id="modifyConceptBtn" class="kb-btn kb-btn--modify" title="Modify block contents">✎ Contents</button>
+                <button id="modifyBlockBtn" class="kb-btn kb-btn--relations" title="Modify block relations">⇄ Relations</button>
+              </div>
             </div>
 
             <div class="knowledge-filters">
@@ -209,12 +268,14 @@
                 </select>
               </div>
               <div class="block-type-filter">
-                <label class="knowledge-label">Block Types</label>
                 <div id="blockTypeFilters"></div>
               </div>
 
               <div class="concept-type-filter">
-                <label class="knowledge-label">Concepts</label>
+                <div class="concept-type-header">
+                  <label class="knowledge-label">Concepts</label>
+                  <input type="text" id="conceptSearch" class="concept-search-input" placeholder="Search…">
+                </div>
                 <div id="conceptTree" class="concept-tree"></div>
               </div>
 
@@ -268,8 +329,110 @@
 
 </main>
 
+<!-- ====== INGEST MODAL ====== -->
+<div id="ingestModal" class="rel-overlay" style="display:none;">
+  <div class="rel-modal ingest-modal">
+    <div class="rel-header">
+      <span class="rel-title">↥ Document Ingestion</span>
+      <div class="rel-header-controls">
+        <button id="ingestCloseBtn" class="rel-close">✕</button>
+      </div>
+    </div>
+    <div class="ingest-body">
+      <!-- LEFT: upload + config -->
+      <div class="ingest-upload-panel">
+        <div class="ingest-drop-area" id="ingestDropArea">
+          <div class="ingest-drop-icon">📄</div>
+          <div class="ingest-drop-label">Drop a PDF or DOCX here</div>
+          <div class="ingest-drop-sub">or click to browse</div>
+          <input type="file" id="ingestFileInput" accept=".pdf,.docx" style="display:none">
+        </div>
+        <div class="ingest-file-info" id="ingestFileInfo" style="display:none;">
+          <span id="ingestFileName"></span>
+          <button id="ingestClearFile" class="ingest-clear-btn">✕</button>
+        </div>
+        <div class="ingest-options">
+          <label class="ingest-label">Project context</label>
+          <select id="ingestProjectSelect" class="rel-select" style="width:100%"></select>
+          <label class="ingest-label" style="margin-top:0.6rem">Instructions / query (optional)</label>
+          <textarea id="ingestInstructions" class="ingest-instructions" placeholder="e.g. Focus on formal definitions and theorems. Or without file: Where should 'Markov Decision Process' go in the hierarchy?"></textarea>
+        </div>
+        <button id="ingestRunBtn" class="ingest-run-btn" disabled>✨ Analyse &amp; Suggest</button>
+        <div id="ingestStatus" class="ingest-status"></div>
+      </div>
+      <!-- RIGHT: suggestions -->
+      <div class="ingest-suggestions-panel">
+        <div class="ingest-suggestions-header">
+          <span class="ingest-suggestions-title">Suggestions</span>
+          <div class="ingest-suggestions-actions" id="ingestBulkActions" style="display:none;">
+            <button id="ingestAcceptAll" class="ingest-bulk-btn ingest-bulk-accept">✔ Accept all</button>
+            <button id="ingestRejectAll" class="ingest-bulk-btn ingest-bulk-reject">✖ Reject all</button>
+          </div>
+        </div>
+        <div id="ingestSuggestions" class="ingest-suggestions-list">
+          <div class="ingest-empty">Run an analysis to see suggestions here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- ====== PROJECT SCHEMAS MODAL ====== -->
+<div id="projectSchemasModal" class="rel-overlay" style="display:none;">
+  <div class="rel-modal schema-modal">
+    <div class="rel-header">
+      <span class="rel-title">🧩 Project Schemas</span>
+      <div class="rel-header-controls">
+        <button id="projectSchemasCloseBtn" class="rel-close">✕</button>
+      </div>
+    </div>
+    <div class="schema-modal-body">
+      <div id="projectSchemaPanel" class="project-schema-panel">
+        <div class="project-schema-row">
+          <select id="projectSchemaProject" class="new-project-select" title="Project"></select>
+          <select id="projectSchemaSelect" class="new-project-select" title="Schema"></select>
+        </div>
+        <div class="project-schema-actions">
+          <button id="projectSchemaNewBtn" class="kb-btn kb-btn--concept" title="New schema">＋ Schema</button>
+          <button id="projectSchemaRenameBtn" class="kb-btn" title="Rename schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">✎ Rename</button>
+          <button id="projectSchemaDuplicateBtn" class="kb-btn" title="Duplicate schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">⧉ Duplicate</button>
+          <button id="projectSchemaTemplateBtn" class="kb-btn" title="Insert template" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">🧩 Template</button>
+          <button id="projectSchemaDeleteBtn" class="kb-btn" title="Delete schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">🗑 Delete</button>
+          <button id="projectSchemaExportBtn" class="kb-btn" title="Export markdown" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">⇩ Export MD</button>
+        </div>
+        <textarea id="projectSchemaText" class="project-schema-text" placeholder="Escribe aquí tu esquema libre del proyecto (arquitectura, módulos, flujo de datos, riesgos, TODOs, etc.)"></textarea>
+        <div id="projectSchemaStatus" class="project-schema-status">Select a project to start. Tip: Tab / Shift+Tab for indentation, Ctrl+S to save.</div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- ====== RELATIONS MODAL ====== -->
+<div id="relationsModal" class="rel-overlay" style="display:none;">
+  <div class="rel-modal">
+    <div class="rel-header">
+      <span class="rel-title">⇄ Relations Editor</span>
+      <div class="rel-header-controls">
+        <label class="rel-toggle-label">
+          <input type="checkbox" id="relShowBlocksToggle"> Show blocks
+        </label>
+        <select id="relProjectFilter" class="rel-select"></select>
+        <button id="relCloseBtn" class="rel-close">✕</button>
+      </div>
+    </div>
+    <div class="rel-body">
+      <!-- LEFT: visual tree -->
+      <div class="rel-tree-panel">
+        <div class="rel-tree-label">Concept Hierarchy</div>
+        <div id="relConceptTree" class="rel-tree-scroll"></div>
+      </div>
+      <!-- RIGHT: edit panel -->
+      <div class="rel-edit-panel" id="relEditPanel">
+        <div class="rel-edit-empty">← Select a concept to edit its relations</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -1,5 +1,243 @@
 /* ===== DAILY SCHEDULE STYLES ===== */
 
+.schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+}
+
+.schedule-header h2 {
+  margin: 0;
+}
+
+.schedule-create-btn {
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.88);
+  border-radius: 8px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.schedule-create-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.55);
+}
+
+.month-calendar-box {
+  margin-bottom: 0.8rem;
+  padding: 12px 14px;
+}
+
+.month-calendar-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.month-calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.month-calendar-nav {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  line-height: 1;
+  font-size: 0.95rem;
+  padding: 0;
+}
+
+.month-calendar-nav:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.55);
+}
+
+.month-calendar-weekdays,
+.month-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.month-calendar-weekdays span {
+  font-size: 0.66rem;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.month-calendar-grid {
+  margin-top: 0.35rem;
+}
+
+.month-day {
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.month-day:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.month-day.other-month {
+  color: rgba(255,255,255,0.38);
+  background: rgba(255,255,255,0.015);
+}
+
+.month-day.other-month:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.month-day.today {
+  background: rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.6);
+  color: #cdd8ff;
+  font-weight: 700;
+}
+
+.month-day.selected {
+  background: rgba(159, 122, 234, 0.26);
+  border-color: rgba(159, 122, 234, 0.58);
+  color: #e9d8fd;
+  font-weight: 700;
+}
+
+.month-day.has-activity {
+  border-color: rgba(72, 187, 120, 0.52);
+}
+
+.month-day.has-activity::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #68d391;
+  bottom: 2px;
+  right: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+}
+
+.month-day {
+  position: relative;
+}
+
+.activity-editor {
+  display: grid;
+  grid-template-columns: 54px 58px 1fr;
+  gap: 6px;
+  align-items: center;
+}
+
+.slot-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slot-task-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.slot-task-title {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.82em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.slot-task-title:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+
+.slot-task-duration,
+.slot-task-delete,
+.slot-add-btn {
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.82);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.slot-task-duration {
+  padding: 5px 7px;
+  font-size: 0.72em;
+}
+
+.slot-task-delete {
+  width: 26px;
+  height: 26px;
+  line-height: 1;
+  font-size: 0.95em;
+}
+
+.slot-add-btn {
+  align-self: flex-start;
+  padding: 4px 8px;
+  font-size: 0.72em;
+}
+
+.slot-add-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.slot-draggable {
+  cursor: grab;
+}
+
+.slot-draggable.dragging {
+  opacity: 0.55;
+}
+
+.time-input {
+  width: 100%;
+  padding: 6px 6px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #d8d8e8;
+  font-size: 0.76em;
+  outline: none;
+}
+
+.time-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
 .schedule {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;

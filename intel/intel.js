@@ -6,7 +6,46 @@ const knowledgeState = {
   block_types: [] // empty array means “all block types”
 };
 
+let cachedConcepts = []; // global concept cache for ingest preview
+
 const KNOWLEDGE_API_BASE = "https://api-dashboard-production-fc05.up.railway.app";
+
+// ── Backblaze B2 signed-URL cache ──────────────────────────────
+const b2Cache = new Map(); // path → { url, expiry }
+
+async function resolveB2Images(text) {
+  if (!text || !text.includes('b2://')) return text;
+
+  const paths = [...new Set(
+    [...text.matchAll(/b2:\/\/([^\s)"']+)/g)].map(m => m[1])
+  )];
+  if (!paths.length) return text;
+
+  const now = Date.now();
+  const resolved = {};
+
+  await Promise.all(paths.map(async (path) => {
+    const cached = b2Cache.get(path);
+    if (cached && cached.expiry > now) {
+      resolved[path] = cached.url;
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${KNOWLEDGE_API_BASE}/media/signed-url?file=${encodeURIComponent(path)}`
+      );
+      const data = await res.json();
+      const expiry = now + 55 * 60 * 1000; // 55 min (under 1-hr TTL)
+      b2Cache.set(path, { url: data.url, expiry });
+      resolved[path] = data.url;
+    } catch {
+      resolved[path] = `b2://${path}`; // keep original on error
+    }
+  }));
+
+  return text.replace(/b2:\/\/([^\s)"']+)/g, (_, p) => resolved[p] ?? `b2://${p}`);
+}
+// ──────────────────────────────────────────────────────────────
 
 
 const projectSelect = document.getElementById("projectSelect");
@@ -24,6 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setupKnowledgeSidebar();
   loadProjects();
   loadConcepts();
+
+  const searchInput = document.getElementById("conceptSearch");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => filterConceptTree(searchInput.value));
+  }
 });
 
 function setupKnowledgeSidebar() {
@@ -36,7 +80,8 @@ function setupKnowledgeSidebar() {
   toggleBtn.addEventListener("click", () => {
     const collapsed = sidebar.classList.toggle("collapsed");
     layout.classList.toggle("collapsed", collapsed);
-    
+    toggleBtn.textContent = collapsed ? "\u203a" : "\u2039";
+    toggleBtn.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
   });
 }
 
@@ -89,65 +134,103 @@ async function loadConcepts() {
   }
 
   renderConceptTree(concepts);
+  cachedConcepts = concepts;
 }
 
 // REVISAR QUE ESTO ES LO DEL BOTON DE ADD CONCEPT
 
-document.getElementById('addConceptBtn').addEventListener('click', async () => {
-    const name = prompt('New Concept');
-    if (!name) return;
+// MODO MODIFICAR CONTENIDOS
+let isModifyingContents = false;
+const modifyContentsBtn = document.getElementById('modifyConceptBtn');
+if (modifyContentsBtn) {
+  modifyContentsBtn.addEventListener('click', () => {
+    isModifyingContents = !isModifyingContents;
+    modifyContentsBtn.classList.toggle('active', isModifyingContents);
+    viewer.classList.toggle('modifying', isModifyingContents);
+    conceptTree.classList.toggle('is-modifying', isModifyingContents);
+    fetchKnowledge();
+  });
+}
 
-    const parent_concept_id = knowledgeState.concept_id || null;
-    console.log("🔵 Parent Concept ID:", parent_concept_id);
-    const project_id = knowledgeState.project_id || null;
+async function createConceptFromPrompt() {
+  const name = prompt('New Concept');
+  if (!name) return;
 
-    
+  const parent_concept_id = knowledgeState.concept_id || null;
+  const project_id = knowledgeState.project_id || null;
 
-    const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/new`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, parent_concept_id, project_id})
-    });
+  const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/new`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, parent_concept_id, project_id })
+  });
 
-    if (res.ok) {
-        loadConcepts();
-    } else {
-        alert('Error creating concept');
+  if (res.ok) {
+    loadConcepts();
+  } else {
+    alert('Error creating concept');
+  }
+}
+
+async function createBlockFromPrompt() {
+  if (!knowledgeState.concept_id) {
+    alert('Select a concept first');
+    return;
+  }
+
+  const content = prompt('Content of the new block:');
+  if (!content) return;
+
+  const block_type = prompt('Block type (definition, intuition, formula, etc):');
+  if (!block_type) return;
+
+  const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/new`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      concept_id: knowledgeState.concept_id,
+      content,
+      block_type,
+      project_id: knowledgeState.project_id || null,
+      mode: knowledgeState.mode || null
+    })
+  });
+
+  if (res.ok) {
+    fetchKnowledge();
+  } else {
+    alert('Error creating block');
+  }
+}
+
+const addBtn = document.getElementById('addConceptBtn');
+if (addBtn) {
+  addBtn.addEventListener('click', async () => {
+    const defaultOption = knowledgeState.concept_id ? 'b' : 'c';
+    const choice = (prompt('Add what? (c = concept, b = block)', defaultOption) || '').trim().toLowerCase();
+    if (!choice) return;
+
+    if (choice === 'b' || choice === 'block') {
+      await createBlockFromPrompt();
+      return;
     }
-});
 
-document.getElementById('addBlockBtn').addEventListener('click', async () => {
-    if (!knowledgeState.concept_id) {
-        alert('Select a concept first');
-        return;
+    if (choice === 'c' || choice === 'concept') {
+      await createConceptFromPrompt();
+      return;
     }
- 
-    const content = prompt('Content of the new block:');
-    if (!content) return;
 
-    const block_type = prompt('Block type (definition, intuition, formula, etc):');
-    if (!block_type) return;
-
-    const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/new`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            concept_id: knowledgeState.concept_id,
-            content,
-            block_type,
-            project_id: knowledgeState.project_id || null,
-            mode: knowledgeState.mode || null
-        })
-    });
-
-    if (res.ok) {
-        fetchKnowledge();
-    } else {
-        alert('Error creating block');
-    }
-});
+    alert('Use c (concept) or b (block)');
+  });
+}
 
 function renderConceptTree(concepts) {
+  // Persist which concepts had their children collapsed
+  const collapsedIds = new Set(
+    [...conceptTree.querySelectorAll(".concept-children.collapsed")]
+      .map(el => el.dataset.conceptId)
+  );
+
   conceptTree.innerHTML = "";
 
   if (!Array.isArray(concepts) || concepts.length === 0) {
@@ -167,28 +250,157 @@ function renderConceptTree(concepts) {
 
   function renderNode(parentId, container, depth = 0) {
     (byParent[parentId] || []).forEach(c => {
+      const hasChildren = (byParent[c.id] || []).length > 0;
+
       const el = document.createElement("div");
-      el.textContent = c.name;
       el.style.paddingLeft = `${depth * 12}px`;
       el.classList.add("concept-item");
+      el.dataset.conceptId = c.id;
+      el.dataset.parentId = c.parent_concept_id ?? "root";
+      el.dataset.conceptName = c.name.toLowerCase();
 
-      el.addEventListener("click", () => {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.classList.add("concept-toggle");
+      toggleBtn.textContent = hasChildren ? "▾" : "";
+      toggleBtn.style.visibility = hasChildren ? "visible" : "hidden";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = c.name;
+      nameSpan.classList.add("concept-name");
+      nameSpan.addEventListener("click", () => {
+        const wasActive = el.classList.contains("active");
+
         document
           .querySelectorAll(".concept-item.active")
           .forEach(x => x.classList.remove("active"));
 
+        if (wasActive) {
+          knowledgeState.concept_id = null;
+          viewer.innerHTML = "";
+          return;
+        }
+
         el.classList.add("active");
         knowledgeState.concept_id = c.id;
         console.log("🔵 Concepto seleccionado:", c.id, c.name);
+        pinRootAncestorToTop(c.id);
         fetchKnowledge();
       });
 
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "×";
+      deleteBtn.classList.add("concept-delete-btn");
+      deleteBtn.title = "Delete concept (and all children)";
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Delete "${c.name}" and all its children?`)) return;
+        try {
+          const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/${c.id}`, {
+            method: "DELETE"
+          });
+          if (!res.ok) throw new Error(await res.text());
+          if (knowledgeState.concept_id === c.id) {
+            knowledgeState.concept_id = null;
+            viewer.innerHTML = "";
+          }
+          loadConcepts();
+        } catch (err) {
+          console.error("Error deleting concept:", err);
+          alert("Error deleting concept");
+        }
+      });
+
+      el.appendChild(toggleBtn);
+      el.appendChild(nameSpan);
+      el.appendChild(deleteBtn);
       container.appendChild(el);
-      renderNode(c.id, container, depth + 1);
+
+      const childrenContainer = document.createElement("div");
+      childrenContainer.classList.add("concept-children");
+      childrenContainer.dataset.conceptId = c.id;
+      if (collapsedIds.has(String(c.id))) {
+        childrenContainer.classList.add("collapsed");
+        toggleBtn.textContent = "▸";
+      }
+      container.appendChild(childrenContainer);
+      renderNode(c.id, childrenContainer, depth + 1);
+
+      if (hasChildren) {
+        toggleBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const collapsed = childrenContainer.classList.toggle("collapsed");
+          toggleBtn.textContent = collapsed ? "▸" : "▾";
+        });
+      }
     });
   }
 
   renderNode("root", conceptTree);
+
+  // Re-apply current search filter after re-render
+  const searchInput = document.getElementById("conceptSearch");
+  if (searchInput && searchInput.value.trim()) {
+    filterConceptTree(searchInput.value.trim());
+  }
+}
+
+function pinRootAncestorToTop(conceptId) {
+  // Walk up parent chain until we reach a direct child of conceptTree (parentId === "root")
+  let el = conceptTree.querySelector(`.concept-item[data-concept-id="${conceptId}"]`);
+  if (!el) return;
+
+  while (el && el.dataset.parentId !== "root") {
+    const parentId = el.dataset.parentId;
+    el = conceptTree.querySelector(`.concept-item[data-concept-id="${parentId}"]`);
+  }
+  if (!el) return;
+
+  // el is now the root-level concept-item; its next sibling is the concept-children div
+  const children = el.nextElementSibling;
+  conceptTree.insertBefore(el, conceptTree.firstChild);
+  if (children && children.classList.contains("concept-children")) {
+    conceptTree.insertBefore(children, conceptTree.children[1]);
+  }
+}
+
+function filterConceptTree(term) {
+  const tree = conceptTree;
+  const q = term.toLowerCase().trim();
+
+  if (!q) {
+    tree.classList.remove("is-searching");
+    tree.querySelectorAll(".concept-item").forEach(el => el.classList.remove("concept-hidden"));
+    return;
+  }
+
+  tree.classList.add("is-searching");
+
+  // Build parent map: conceptId -> parentId
+  const parentMap = {};
+  tree.querySelectorAll(".concept-item[data-concept-id]").forEach(el => {
+    parentMap[el.dataset.conceptId] = el.dataset.parentId;
+  });
+
+  // Find directly matching IDs
+  const matchedIds = new Set();
+  tree.querySelectorAll(".concept-item[data-concept-name]").forEach(el => {
+    if (el.dataset.conceptName.includes(q)) matchedIds.add(el.dataset.conceptId);
+  });
+
+  // Collect all ancestor IDs of matched nodes
+  const visibleIds = new Set(matchedIds);
+  matchedIds.forEach(id => {
+    let cur = parentMap[id];
+    while (cur && cur !== "root") {
+      visibleIds.add(cur);
+      cur = parentMap[cur];
+    }
+  });
+
+  // Show/hide items
+  tree.querySelectorAll(".concept-item[data-concept-id]").forEach(el => {
+    el.classList.toggle("concept-hidden", !visibleIds.has(el.dataset.conceptId));
+  });
 }
 
 function setupModeSelector() {
@@ -268,7 +480,7 @@ async function fetchKnowledge() {
   const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/query?${params.toString()}`);
   const blocks = await res.json();
   console.log("🔵 Blocks recibidos:", blocks.length); 
-  renderKnowledge(blocks);
+  await renderKnowledge(blocks);
 }
 
 // ===============================
@@ -276,57 +488,103 @@ async function fetchKnowledge() {
 // ===============================
 // ...existing code...
 
-function renderKnowledge(blocks) {
-    const viewer = document.getElementById('knowledgeViewer');
-    viewer.innerHTML = '';
+function contentToHtml(text) {
+  if (!text) return '';
+
+  // 1. Extract and protect math blocks before markdown parsing
+  const mathChunks = [];
+  const placeholder = (i) => `MATHPLACEHOLDER${i}ENDMATH`;
+
+  // Protect $$...$$ (display) first, then $...$ (inline)
+  let protected_ = text
+    .replace(/\$\$([\s\S]+?)\$\$/g, (_, inner) => {
+      mathChunks.push({ display: true, inner });
+      return placeholder(mathChunks.length - 1);
+    })
+    .replace(/\$([^$\n]+?)\$/g, (_, inner) => {
+      mathChunks.push({ display: false, inner });
+      return placeholder(mathChunks.length - 1);
+    });
+
+  // 2. Parse markdown
+  let html;
+  if (typeof marked !== 'undefined') {
+    html = marked.parse(protected_, { breaks: true, gfm: true });
+  } else {
+    // Fallback if marked not loaded yet
+    html = protected_.replace(/\n/g, '<br>');
+  }
+
+  // 3. Restore math expressions
+  mathChunks.forEach((chunk, i) => {
+    const delim = chunk.display ? '$$' : '$';
+    html = html.replace(placeholder(i), `${delim}${chunk.inner}${delim}`);
+  });
+
+  return html;
+}
+
+async function renderKnowledge(blocks) {
+  const viewer = document.getElementById('knowledgeViewer');
+  viewer.innerHTML = '';
     
-    if (blocks.length === 0) {
-        viewer.innerHTML = '<p>No blocks available for this concept.</p>';
-        return;
-    }
+  if (blocks.length === 0) {
+    viewer.innerHTML = '<p>No blocks available for this concept.</p>';
+    return;
+  }
 
-    blocks.forEach(block => {
-        const blockDiv = document.createElement('div');
-        blockDiv.className = `knowledge-block ${block.block_type}`;
-        blockDiv.dataset.blockId = block.id;
-        
-        const header = document.createElement('div');
-        header.className = 'block-header';
-        header.innerHTML = `
-            <strong>${block.block_type.toUpperCase()}</strong>
-            ${block.mode ? `<span class="mode-badge">${block.mode}</span>` : ''}
-            <button class="edit-btn" data-block-id="${block.id}">Edit</button>
-            <button class="delete-btn" data-block-id="${block.id}">Delete</button>
-        `;
-        
-        const content = document.createElement('div');
-        content.className = 'block-content';
-        content.innerHTML = block.content;
-        
-        // ✅ GUARDAR CONTENIDO ORIGINAL (antes de renderizar KaTeX)
-        content.dataset.originalContent = block.content;
-        
-        blockDiv.appendChild(header);
-        blockDiv.appendChild(content);
-        viewer.appendChild(blockDiv);
-    });
+  for (const block of blocks) {
+      const blockDiv = document.createElement('div');
+      blockDiv.className = `knowledge-block ${block.block_type}`;
+      blockDiv.dataset.blockId = block.id;
+      blockDiv.dataset.blockType = block.block_type;
 
-    // Renderizar KaTeX DESPUÉS de guardar el original
-    renderMathInElement(viewer, {
-        delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
-        ],
-        throwOnError: false,
-        strict: false
-    });
+      const header = document.createElement('div');
+      header.className = 'block-header';
 
+      let headerHtml = '';
+      // Mostrar etiqueta de tipo de bloque solo si está en modo modificar
+      if (isModifyingContents) {
+        headerHtml += `<strong>${block.block_type.toUpperCase()}</strong>`;
+      }
+      // Mostrar etiqueta de modo solo si está en modo modificar y hay modo
+      if (isModifyingContents && block.mode) {
+        headerHtml += ` <span class="mode-badge">${block.mode}</span>`;
+      }
+      // Mostrar botones solo si está en modo modificar
+      if (isModifyingContents) {
+        headerHtml += ` <button class="edit-btn" data-block-id="${block.id}">Edit</button>`;
+        headerHtml += ` <button class="delete-btn" data-block-id="${block.id}">Delete</button>`;
+      }
+      header.innerHTML = headerHtml;
+
+      const content = document.createElement('div');
+      content.className = 'block-content';
+      content.innerHTML = contentToHtml(await resolveB2Images(block.content));
+      content.dataset.originalContent = block.content;
+
+      blockDiv.appendChild(header);
+      blockDiv.appendChild(content);
+      viewer.appendChild(blockDiv);
+  }
+
+  renderMathInElement(viewer, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false,
+    strict: false
+  });
+
+  if (isModifyingContents) {
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', handleEditClick);
+      btn.addEventListener('click', handleEditClick);
     });
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', handleDeleteClick);
+      btn.addEventListener('click', handleDeleteClick);
     });
+  }
 }
 
 async function handleEditClick(event) {
@@ -339,6 +597,8 @@ async function handleEditClick(event) {
         // GUARDAR
         const textarea = contentDiv.querySelector('textarea');
         const newContent = textarea.value;
+        const typeSelect = contentDiv.querySelector('.block-type-editor');
+        const newType = typeSelect ? typeSelect.value : (blockDiv.dataset.blockType || null);
         
         try {
             const response = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/${blockId}`, {
@@ -346,16 +606,20 @@ async function handleEditClick(event) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ content: newContent })
+                body: JSON.stringify({ content: newContent, block_type: newType })
             });
             
             if (!response.ok) throw new Error('Failed to update');
             
             // ✅ Guardar el nuevo contenido original
             contentDiv.dataset.originalContent = newContent;
+            if (newType) {
+              blockDiv.dataset.blockType = newType;
+              blockDiv.className = `knowledge-block ${newType}`;
+            }
             
             // Renderizar el HTML
-            contentDiv.innerHTML = newContent;
+            contentDiv.innerHTML = contentToHtml(await resolveB2Images(newContent));
             editBtn.textContent = 'Edit';
             
             // Renderizar KaTeX
@@ -377,23 +641,504 @@ async function handleEditClick(event) {
         // EDITAR
         // ✅ Usar el contenido original (con $ y $$), no el renderizado
         const originalContent = contentDiv.dataset.originalContent || contentDiv.innerHTML;
+        const currentType = blockDiv.dataset.blockType || 'definition';
+
+        const BLOCK_TYPES = ['definition','intuition','formula','example','proof','theorem','remark','exercise','summary'];
+        const typeOptions = BLOCK_TYPES.map(t =>
+          `<option value="${t}" ${t === currentType ? 'selected' : ''}>${t}</option>`
+        ).join('');
         
-        contentDiv.innerHTML = `<textarea class="block-editor">${originalContent}</textarea>`;
+        contentDiv.innerHTML = `
+          <select class="block-type-editor">${typeOptions}</select>
+          <textarea class="block-editor">${originalContent}</textarea>
+          <div class="block-editor-toolbar">
+            <label class="btn-upload-img" title="Upload image to B2">
+              📎 Upload image
+              <input type="file" accept="image/*,video/*,application/pdf" style="display:none">
+            </label>
+            <span class="upload-status"></span>
+          </div>`;
         editBtn.textContent = 'Save';
-        
+
         const textarea = contentDiv.querySelector('textarea');
         textarea.focus();
-        
+
         // ✅ Auto-resize del textarea
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
-        
         textarea.addEventListener('input', () => {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         });
+
+        // 🖼️ Upload image handler
+        const fileInput = contentDiv.querySelector('input[type=file]');
+        const statusEl = contentDiv.querySelector('.upload-status');
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            if (!knowledgeState.concept_id) {
+                statusEl.textContent = 'Select a concept first';
+                return;
+            }
+            statusEl.textContent = 'Uploading…';
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('concept_id', knowledgeState.concept_id);
+                formData.append('block_id', blockId);
+                const res = await fetch(`${KNOWLEDGE_API_BASE}/media/upload`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!res.ok) throw new Error(await res.text());
+                const { b2_ref, path } = await res.json();
+                const filename = path.split('/').pop();
+                const md = `![${filename}](${b2_ref})`;
+                // Insert at cursor position
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                textarea.value = textarea.value.slice(0, start) + md + textarea.value.slice(end);
+                textarea.selectionStart = textarea.selectionEnd = start + md.length;
+                textarea.dispatchEvent(new Event('input'));
+                textarea.focus();
+                statusEl.textContent = '✓ Inserted';
+                setTimeout(() => { statusEl.textContent = ''; }, 3000);
+            } catch (err) {
+                console.error(err);
+                statusEl.textContent = '✖ Upload failed';
+            }
+            fileInput.value = '';
+        });
     }
 }
+
+// ===============================
+// RELATIONS MODAL
+// ===============================
+
+let relAllConcepts = [];
+let relAllProjects = [];
+let relAllBlocks = [];
+let relShowBlocks = false;
+let relSelectedConcept = null;
+let relSelectedBlock = null;
+
+document.getElementById('modifyBlockBtn').addEventListener('click', openRelationsModal);
+
+async function openRelationsModal() {
+  const modal = document.getElementById('relationsModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  const relProjectFilter = document.getElementById('relProjectFilter');
+  if (relAllProjects.length === 0) {
+    const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/projects`);
+    relAllProjects = await res.json();
+  }
+  relProjectFilter.innerHTML = `<option value="">All projects</option>`;
+  relAllProjects.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = p.name;
+    relProjectFilter.appendChild(o);
+  });
+  if (knowledgeState.project_id) relProjectFilter.value = knowledgeState.project_id;
+  relProjectFilter.onchange = () => loadRelData(relProjectFilter.value || null);
+
+  // Sync toggle state
+  document.getElementById('relShowBlocksToggle').checked = relShowBlocks;
+
+  await loadRelData(knowledgeState.project_id);
+}
+
+async function loadRelData(projectId) {
+  let url = `${KNOWLEDGE_API_BASE}/knowledge/concepts`;
+  if (projectId) url += `?project_id=${projectId}`;
+  const res = await fetch(url);
+  relAllConcepts = await res.json();
+
+  if (relShowBlocks) {
+    await loadRelBlocks(projectId);
+  } else {
+    relAllBlocks = [];
+  }
+
+  relSelectedConcept = null;
+  relSelectedBlock = null;
+  renderRelEditPanel(null);
+  renderRelTree();
+}
+
+async function loadRelBlocks(projectId) {
+  let url = `${KNOWLEDGE_API_BASE}/knowledge/blocks`;
+  if (projectId) url += `?project_id=${projectId}`;
+  const res = await fetch(url);
+  if (res.ok) relAllBlocks = await res.json();
+  else relAllBlocks = [];
+}
+
+document.getElementById('relShowBlocksToggle').addEventListener('change', async (e) => {
+  relShowBlocks = e.target.checked;
+  const projectId = document.getElementById('relProjectFilter').value || null;
+  if (relShowBlocks && relAllConcepts.length > 0) {
+    await loadRelBlocks(projectId);
+  } else {
+    relAllBlocks = [];
+  }
+  relSelectedBlock = null;
+  renderRelTree();
+});
+
+function renderRelTree() {
+  const container = document.getElementById('relConceptTree');
+  container.innerHTML = '';
+
+  const byParent = {};
+  relAllConcepts.forEach(c => {
+    const key = c.parent_concept_id ?? 'root';
+    byParent[key] ||= [];
+    byParent[key].push(c);
+  });
+  const blocksByConcept = {};
+  relAllBlocks.forEach(b => {
+    blocksByConcept[b.concept_id] ||= [];
+    blocksByConcept[b.concept_id].push(b);
+  });
+
+  function makeIndent(isLastArr, addCorner) {
+    const indentDiv = document.createElement('div');
+    indentDiv.classList.add('rel-node-indent');
+    isLastArr.forEach(parentIsLast => {
+      const line = document.createElement('span');
+      if (parentIsLast) {
+        line.style.cssText = 'display:inline-block;width:16px;flex-shrink:0';
+      } else {
+        line.classList.add('rel-line-v');
+      }
+      indentDiv.appendChild(line);
+    });
+    if (addCorner) {
+      const corner = document.createElement('span');
+      corner.classList.add('rel-line-corner');
+      indentDiv.appendChild(corner);
+    }
+    return indentDiv;
+  }
+
+  function renderRelNode(parentId, container, depth, isLastArr) {
+    const children = byParent[parentId] || [];
+    children.forEach((c, idx) => {
+      const conceptBlocks = relShowBlocks ? (blocksByConcept[c.id] || []) : [];
+      const hasSubConcepts = (byParent[c.id] || []).length > 0;
+      const isLast = idx === children.length - 1;
+
+      const row = document.createElement('div');
+      row.classList.add('rel-node-row');
+      if (relSelectedConcept && relSelectedConcept.id === c.id) row.classList.add('selected');
+
+      row.appendChild(makeIndent(isLastArr, depth > 0));
+
+      const icon = document.createElement('span');
+      icon.classList.add('rel-node-icon');
+      icon.textContent = (hasSubConcepts || conceptBlocks.length > 0) ? '▶' : '●';
+
+      const name = document.createElement('span');
+      name.classList.add('rel-node-name');
+      name.textContent = c.name;
+
+      row.appendChild(icon);
+      row.appendChild(name);
+      row.addEventListener('click', () => {
+        relSelectedConcept = c;
+        relSelectedBlock = null;
+        document.querySelectorAll('.rel-node-row').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        renderRelEditPanel(c);
+      });
+      container.appendChild(row);
+
+      // Sub-concepts
+      renderRelNode(c.id, container, depth + 1, [...isLastArr, isLast && conceptBlocks.length === 0]);
+
+      // Blocks under this concept
+      conceptBlocks.forEach((b, bidx) => {
+        const bIsLast = bidx === conceptBlocks.length - 1;
+        const blockRow = document.createElement('div');
+        blockRow.classList.add('rel-node-row', 'rel-block-row');
+        if (relSelectedBlock && relSelectedBlock.id === b.id) blockRow.classList.add('selected');
+
+        blockRow.appendChild(makeIndent([...isLastArr, isLast], true));
+
+        const bIcon = document.createElement('span');
+        bIcon.classList.add('rel-node-icon', 'rel-block-icon');
+        bIcon.textContent = '□';
+
+        const bName = document.createElement('span');
+        bName.classList.add('rel-node-name', 'rel-block-name');
+        bName.textContent = `[${b.block_type}] ${b.content_preview || ''}`;
+
+        blockRow.appendChild(bIcon);
+        blockRow.appendChild(bName);
+        blockRow.addEventListener('click', () => {
+          relSelectedBlock = b;
+          relSelectedConcept = null;
+          document.querySelectorAll('.rel-node-row').forEach(r => r.classList.remove('selected'));
+          blockRow.classList.add('selected');
+          renderRelBlockEditPanel(b);
+        });
+        container.appendChild(blockRow);
+      });
+    });
+  }
+
+  renderRelNode('root', container, 0, []);
+}
+
+function renderRelEditPanel(concept) {
+  const panel = document.getElementById('relEditPanel');
+  if (!concept) {
+    panel.innerHTML = '<div class="rel-edit-empty">← Select a concept or block to edit its relations</div>';
+    return;
+  }
+
+  const currentParent = concept.parent_concept_id
+    ? relAllConcepts.find(c => c.id === concept.parent_concept_id)
+    : null;
+
+  const descendants = getDescendantIds(concept.id);
+  const parentOptions = relAllConcepts.filter(c => c.id !== concept.id && !descendants.has(c.id));
+
+  let parentSelectHtml = `<option value="">— None (root) —</option>`;
+  parentOptions.forEach(c => {
+    const sel = c.id === concept.parent_concept_id ? 'selected' : '';
+    parentSelectHtml += `<option value="${c.id}" ${sel}>${c.name}</option>`;
+  });
+
+  panel.innerHTML = `
+    <div class="rel-edit-title-row">
+      <span id="relEditTitleText" class="rel-edit-title">${concept.name}</span>
+      <button id="relEditNameBtn" class="rel-inline-edit-btn" title="Rename">✎</button>
+    </div>
+    <div class="rel-edit-section">
+      <div class="rel-edit-section-label">ID</div>
+      <div class="rel-edit-value">#${concept.id}</div>
+    </div>
+    <div class="rel-edit-section">
+      <div class="rel-edit-section-label">Current Parent</div>
+      <div class="rel-edit-value">${currentParent ? currentParent.name : '— root —'}</div>
+    </div>
+    <div class="rel-edit-section">
+      <div class="rel-edit-section-label">Change Parent</div>
+      <select id="relParentSelect" class="rel-parent-select">${parentSelectHtml}</select>
+    </div>
+    <button id="relSaveParentBtn" class="rel-save-btn">Save Parent</button>
+  `;
+
+  document.getElementById('relEditNameBtn').addEventListener('click', () => {
+    const titleEl = document.getElementById('relEditTitleText');
+    const btn = document.getElementById('relEditNameBtn');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = titleEl.textContent;
+    input.className = 'rel-name-input';
+    titleEl.replaceWith(input);
+    btn.style.display = 'none';
+    input.focus();
+    input.select();
+
+    const saveName = async () => {
+      const newName = input.value.trim();
+      if (!newName || newName === concept.name) {
+        input.replaceWith(titleEl);
+        btn.style.display = '';
+        return;
+      }
+      try {
+        const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/${concept.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const c = relAllConcepts.find(x => x.id === concept.id);
+        c.name = newName;
+        relSelectedConcept = c;
+        titleEl.textContent = newName;
+        concept.name = newName;
+        renderRelTree();
+        loadConcepts();
+      } catch (err) { console.error(err); alert('Error saving name'); }
+      input.replaceWith(titleEl);
+      btn.style.display = '';
+    };
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveName();
+      if (e.key === 'Escape') { input.replaceWith(titleEl); btn.style.display = ''; }
+    });
+    input.addEventListener('blur', saveName);
+  });
+
+  document.getElementById('relSaveParentBtn').addEventListener('click', async () => {
+    const newParentId = document.getElementById('relParentSelect').value;
+    const btn = document.getElementById('relSaveParentBtn');
+    try {
+      const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/${concept.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parent_concept_id: newParentId ? Number(newParentId) : null })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const c = relAllConcepts.find(x => x.id === concept.id);
+      c.parent_concept_id = newParentId ? Number(newParentId) : null;
+      relSelectedConcept = c;
+      btn.textContent = '✓ Saved'; btn.classList.add('saved');
+      setTimeout(() => { btn.textContent = 'Save Parent'; btn.classList.remove('saved'); }, 1500);
+      renderRelTree();
+      loadConcepts();
+    } catch (err) { console.error(err); alert('Error saving parent'); }
+  });
+
+  // Load and render concept projects section
+  fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/${concept.id}/projects`)
+    .then(r => r.json())
+    .then(data => {
+      const currentIds = new Set(data.project_ids || []);
+      let projectsHtml = relAllProjects.map(p => {
+        const checked = currentIds.has(p.id) ? 'checked' : '';
+        return `<label class="rel-checkbox-item"><input type="checkbox" class="rel-concept-proj-cb" value="${p.id}" ${checked}> ${p.name}</label>`;
+      }).join('');
+      if (!projectsHtml) projectsHtml = '<span style="opacity:0.5;font-size:0.82rem">No projects available</span>';
+
+      const projectSection = document.createElement('div');
+      projectSection.innerHTML = `
+        <div class="rel-edit-section">
+          <div class="rel-edit-section-label">Projects</div>
+          <div class="rel-checkbox-list">${projectsHtml}</div>
+        </div>
+        <button id="relSaveConceptProjectsBtn" class="rel-save-btn">Save Projects</button>
+      `;
+      document.getElementById('relEditPanel').appendChild(projectSection);
+
+      document.getElementById('relSaveConceptProjectsBtn').addEventListener('click', async () => {
+        const checked = [...document.querySelectorAll('.rel-concept-proj-cb:checked')].map(cb => Number(cb.value));
+        const btn = document.getElementById('relSaveConceptProjectsBtn');
+        try {
+          const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/${concept.id}/projects`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ project_ids: checked })
+          });
+          if (!res.ok) throw new Error(await res.text());
+          btn.textContent = '✓ Saved'; btn.classList.add('saved');
+          setTimeout(() => { btn.textContent = 'Save Projects'; btn.classList.remove('saved'); }, 1500);
+          loadConcepts();
+        } catch (err) { console.error(err); alert('Error saving projects'); }
+      });
+    })
+    .catch(err => console.error('Error loading concept projects:', err));
+}
+
+function renderRelBlockEditPanel(block) {
+  const panel = document.getElementById('relEditPanel');
+  const siblingBlocks = relAllBlocks.filter(b => b.concept_id === block.concept_id && b.id !== block.id);
+
+  let dependsHtml = `<option value="">— None —</option>`;
+  siblingBlocks.forEach(b => {
+    const sel = b.id === block.depends_on_block_id ? 'selected' : '';
+    dependsHtml += `<option value="${b.id}" ${sel}>[${b.block_type}] ${(b.content_preview || '').slice(0, 40)}</option>`;
+  });
+
+  let projectsHtml = relAllProjects.map(p => {
+    const checked = (block.project_ids || []).includes(p.id) ? 'checked' : '';
+    return `<label class="rel-checkbox-item"><input type="checkbox" class="rel-proj-cb" value="${p.id}" ${checked}> ${p.name}</label>`;
+  }).join('');
+  if (!projectsHtml) projectsHtml = '<span style="opacity:0.5;font-size:0.82rem">No projects available</span>';
+
+  panel.innerHTML = `
+    <div class="rel-edit-title" style="color:#76c3f0;">[${block.block_type}] Block #${block.id}</div>
+    <div class="rel-edit-section">
+      <div class="rel-edit-section-label">Content preview</div>
+      <div class="rel-edit-value" style="font-style:italic;font-size:0.8rem;opacity:0.7">${block.content_preview || '—'}</div>
+    </div>
+    <div class="rel-edit-section">
+      <div class="rel-edit-section-label">Depends on block</div>
+      <select id="relDependsSelect" class="rel-parent-select">${dependsHtml}</select>
+    </div>
+    <button id="relSaveDependsBtn" class="rel-save-btn">Save Dependency</button>
+    <div class="rel-edit-section" style="margin-top:0.75rem">
+      <div class="rel-edit-section-label">Projects</div>
+      <div class="rel-checkbox-list">${projectsHtml}</div>
+    </div>
+    <button id="relSaveProjectsBtn" class="rel-save-btn">Save Projects</button>
+  `;
+
+  document.getElementById('relSaveDependsBtn').addEventListener('click', async () => {
+    const val = document.getElementById('relDependsSelect').value;
+    const btn = document.getElementById('relSaveDependsBtn');
+    try {
+      const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/${block.id}/relations`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ depends_on_block_id: val ? Number(val) : null })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      block.depends_on_block_id = val ? Number(val) : null;
+      btn.textContent = '✓ Saved'; btn.classList.add('saved');
+      setTimeout(() => { btn.textContent = 'Save Dependency'; btn.classList.remove('saved'); }, 1500);
+    } catch (err) { console.error(err); alert('Error saving dependency'); }
+  });
+
+  document.getElementById('relSaveProjectsBtn').addEventListener('click', async () => {
+    const checked = [...document.querySelectorAll('.rel-proj-cb:checked')].map(cb => Number(cb.value));
+    const btn = document.getElementById('relSaveProjectsBtn');
+    try {
+      const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/${block.id}/projects`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_ids: checked })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      block.project_ids = checked;
+      btn.textContent = '✓ Saved'; btn.classList.add('saved');
+      setTimeout(() => { btn.textContent = 'Save Projects'; btn.classList.remove('saved'); }, 1500);
+    } catch (err) { console.error(err); alert('Error saving projects'); }
+  });
+}
+
+function getDescendantIds(conceptId) {
+  const result = new Set();
+  function recurse(id) {
+    relAllConcepts.filter(c => c.parent_concept_id === id).forEach(c => {
+      result.add(c.id);
+      recurse(c.id);
+    });
+  }
+  recurse(conceptId);
+  return result;
+}
+
+// Close modal
+document.getElementById('relCloseBtn').addEventListener('click', () => {
+  document.getElementById('relationsModal').style.display = 'none';
+  document.body.style.overflow = '';
+});
+document.getElementById('relationsModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('relationsModal');
+    if (modal && modal.style.display !== 'none') {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+});
 
 async function handleDeleteClick(event) {
     const blockId = event.target.dataset.blockId;
@@ -415,10 +1160,492 @@ async function handleDeleteClick(event) {
     }
 }
 
-document.getElementById('modifyBlockBtn').addEventListener('click', () => {
-  document.getElementById('relationsModal').style.display = 'flex';
-});
+// ==============================
+// INGEST MODAL
+// ==============================
 
-document.getElementById('closeRelationsModal').addEventListener('click', () => {
-  document.getElementById('relationsModal').style.display = 'none';
-});
+(function setupIngest() {
+  const modal       = document.getElementById('ingestModal');
+  const openBtn     = document.getElementById('ingestBtn');
+  const closeBtn    = document.getElementById('ingestCloseBtn');
+  const dropArea    = document.getElementById('ingestDropArea');
+  const fileInput   = document.getElementById('ingestFileInput');
+  const fileInfo    = document.getElementById('ingestFileInfo');
+  const fileName    = document.getElementById('ingestFileName');
+  const clearFile   = document.getElementById('ingestClearFile');
+  const projectSel  = document.getElementById('ingestProjectSelect');
+  const instructions= document.getElementById('ingestInstructions');
+  const runBtn      = document.getElementById('ingestRunBtn');
+  const status      = document.getElementById('ingestStatus');
+  const listEl      = document.getElementById('ingestSuggestions');
+  const bulkActions = document.getElementById('ingestBulkActions');
+  const acceptAll   = document.getElementById('ingestAcceptAll');
+  const rejectAll   = document.getElementById('ingestRejectAll');
+
+  let currentFile = null;
+  let suggestions = []; // [{concept, block_type, content, parent_concept_name, _state}]
+  let ingestExistingConcepts = []; // concepts fetched by backend for this ingest run
+  let allSugNodes = []; // all nodes (real + virtual) for the current render
+  const committedByName = {}; // name.lower → real concept id, for auto-committed virtual parents
+
+  function updateRunAvailability() {
+    const hasFile = !!currentFile;
+    const hasInstructions = !!instructions.value.trim();
+    runBtn.disabled = !(hasFile || hasInstructions);
+  }
+
+  // Open / close
+  openBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    populateProjectSelect();
+  });
+  const closeModal = () => {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  };
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
+  });
+
+  // Populate project selector (reuse existing projects from knowledgeState context)
+  function populateProjectSelect() {
+    projectSel.innerHTML = '<option value="">No project</option>';
+    document.querySelectorAll('#projectSelect option').forEach(opt => {
+      if (!opt.value) return;
+      const o = document.createElement('option');
+      o.value = opt.value;
+      o.textContent = opt.textContent;
+      if (opt.value == knowledgeState.project_id) o.selected = true;
+      projectSel.appendChild(o);
+    });
+  }
+
+  // File picking
+  dropArea.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+  dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+  dropArea.addEventListener('drop', e => {
+    e.preventDefault();
+    dropArea.classList.remove('drag-over');
+    setFile(e.dataTransfer.files[0]);
+  });
+
+  clearFile.addEventListener('click', () => setFile(null));
+  instructions.addEventListener('input', updateRunAvailability);
+
+  function setFile(file) {
+    if (file && !['application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ].includes(file.type) && !file.name.match(/\.(pdf|docx)$/i)) {
+      status.textContent = 'Only PDF and DOCX files are supported.';
+      return;
+    }
+    currentFile = file || null;
+    if (currentFile) {
+      fileName.textContent = currentFile.name;
+      fileInfo.style.display = 'flex';
+      dropArea.style.display = 'none';
+      status.textContent = '';
+    } else {
+      fileInfo.style.display = 'none';
+      dropArea.style.display = '';
+      fileInput.value = '';
+    }
+    updateRunAvailability();
+  }
+
+  // Run analysis
+  runBtn.addEventListener('click', async () => {
+    const hasInstructions = !!instructions.value.trim();
+    if (!currentFile && !hasInstructions) return;
+    runBtn.disabled = true;
+    status.textContent = currentFile
+      ? '⏳ Uploading and analysing…'
+      : '⏳ Analysing instructions…';
+    listEl.innerHTML = `<div class="ingest-empty">${currentFile ? 'Analysing document…' : 'Analysing instructions…'}</div>`;
+    bulkActions.style.display = 'none';
+    suggestions = [];
+    allSugNodes = [];
+    Object.keys(committedByName).forEach(k => delete committedByName[k]);
+
+    try {
+      const formData = new FormData();
+      if (currentFile) formData.append('file', currentFile);
+      if (projectSel.value) formData.append('project_id', projectSel.value);
+      if (hasInstructions) formData.append('instructions', instructions.value.trim());
+
+      const res = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/ingest`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+      }
+
+      const payload = await res.json();
+      const rawSuggestions = Array.isArray(payload) ? payload : (payload.suggestions || []);
+      ingestExistingConcepts = Array.isArray(payload.existing_concepts) ? payload.existing_concepts : cachedConcepts;
+      if (!rawSuggestions.length) {
+        listEl.innerHTML = '<div class="ingest-empty">No suggestions generated. Try different instructions.</div>';
+        status.textContent = '';
+        return;
+      }
+      suggestions = rawSuggestions.map(s => ({ ...s, _state: 'pending' }));
+      renderSuggestions();
+      bulkActions.style.display = 'flex';
+      status.textContent = `${suggestions.length} suggestions ready.`;
+    } catch (err) {
+      console.error(err);
+      status.textContent = '❌ Error: ' + err.message;
+      listEl.innerHTML = '<div class="ingest-empty">Something went wrong.</div>';
+    } finally {
+      updateRunAvailability();
+    }
+  });
+
+  // Render suggestion tree as contextual hierarchy preview
+  function renderSuggestions() {
+    listEl.innerHTML = '';
+    if (!suggestions.length) return;
+
+    // Build lookup maps — use concepts the backend actually fed to GPT
+    const sourceList = ingestExistingConcepts.length ? ingestExistingConcepts : cachedConcepts;
+    const existingById = {};
+    const existingByName = {};
+    const existingByNameNorm = {}; // spaces+case stripped for fuzzy fallback
+    sourceList.forEach(c => {
+      existingById[c.id] = c;
+      existingByName[c.name.toLowerCase().trim()] = c;
+      existingByNameNorm[c.name.toLowerCase().replace(/\s+/g, '')] = c;
+    });
+
+    // fuzzy name lookup: exact → normalised → startsWith
+    function findExisting(rawName) {
+      if (!rawName) return null;
+      const lower = rawName.toLowerCase().trim();
+      if (existingByName[lower]) return existingByName[lower];
+      const norm = lower.replace(/\s+/g, '');
+      if (existingByNameNorm[norm]) return existingByNameNorm[norm];
+      // startsWith fallback
+      const found = Object.values(existingByName).find(c =>
+        c.name.toLowerCase().startsWith(lower) || lower.startsWith(c.name.toLowerCase())
+      );
+      return found || null;
+    }
+
+    console.log('[ingest] existing concept names:', Object.keys(existingByName));
+    console.log('[ingest] suggestions from GPT:', suggestions.map(s => ({ concept: s.concept, parent: s.parent_concept_name })));
+
+    // ── Build sugNodes (synthetic IDs: -1, -2, …) ─────────────────────────
+    // Parent resolution order:
+    //   1. Existing concept (fuzzy match)
+    //   2. Another suggestion in the same batch (by name)
+    //   3. Virtual intermediate node (auto-created as a pending suggestion)
+
+    let nextVirtualId = -(suggestions.length + 1);
+    const virtualNodes = []; // extra nodes created to bridge orphaned suggestions
+
+    // First pass – create stubs (parent resolved in second pass)
+    const sugNodes = suggestions.map((s, i) => ({
+      _sugIdx: i,
+      id: -(i + 1),
+      name: s.concept,
+      _parentName: s.parent_concept_name,
+      parent_concept_id: null, // filled below
+      isSuggested: true,
+      _state: s._state,
+      block_type: s.block_type,
+      content: s.content
+    }));
+
+    // Name → sugNode map for cross-suggestion lookup
+    const sugNodeByName = {};
+    sugNodes.forEach(sn => {
+      sugNodeByName[sn.name.toLowerCase().trim()] = sn;
+      sugNodeByName[sn.name.toLowerCase().replace(/\s+/g, '')] = sn;
+    });
+
+    function findOrCreateVirtual(rawName) {
+      const lower = rawName.toLowerCase().trim();
+      const norm  = lower.replace(/\s+/g, '');
+      let v = virtualNodes.find(n =>
+        n.name.toLowerCase().trim() === lower ||
+        n.name.toLowerCase().replace(/\s+/g, '') === norm
+      );
+      if (!v) {
+        console.warn(`[ingest] creating virtual parent: "${rawName}"`);
+        v = {
+          _sugIdx: null, _isVirtual: true,
+          id: nextVirtualId--,
+          name: rawName,
+          _parentName: null,
+          parent_concept_id: null,
+          isSuggested: true,
+          _state: 'pending',
+          block_type: 'definition',
+          content: ''
+        };
+        virtualNodes.push(v);
+        sugNodeByName[lower] = v;
+        sugNodeByName[norm]   = v;
+      }
+      return v;
+    }
+
+    // Second pass – resolve parents
+    sugNodes.forEach(sn => {
+      const raw = sn._parentName;
+      if (!raw) return;
+      // 1. existing concept
+      const existing = findExisting(raw);
+      if (existing) { sn.parent_concept_id = existing.id; return; }
+      // 2. sibling suggestion
+      const lower  = raw.toLowerCase().trim();
+      const norm   = raw.toLowerCase().replace(/\s+/g, '').trim();
+      const sibling = sugNodeByName[lower] || sugNodeByName[norm];
+      if (sibling && sibling !== sn) { sn.parent_concept_id = sibling.id; return; }
+      // 3. create virtual
+      sn.parent_concept_id = findOrCreateVirtual(raw).id;
+    });
+
+    allSugNodes = [...sugNodes, ...virtualNodes];
+
+    // Collect relevant existing concept IDs (ancestors of all attachment points)
+    const relevantIds = new Set();
+    function collectAncestors(id) {
+      if (!id || relevantIds.has(id)) return;
+      relevantIds.add(id);
+      const c = existingById[id];
+      if (c && c.parent_concept_id) collectAncestors(c.parent_concept_id);
+    }
+    allSugNodes.forEach(sn => {
+      if (sn.parent_concept_id && sn.parent_concept_id > 0) collectAncestors(sn.parent_concept_id);
+    });
+
+    // Build combined byParent map
+    const byParent = {};
+    sourceList.forEach(c => {
+      if (!relevantIds.has(c.id)) return;
+      const parentInScope = c.parent_concept_id && existingById[c.parent_concept_id];
+      const key = parentInScope ? c.parent_concept_id : 'root';
+      byParent[key] ||= [];
+      byParent[key].push({ ...c, isSuggested: false });
+    });
+    allSugNodes.forEach(sn => {
+      const parentInScope = sn.parent_concept_id &&
+        (existingById[sn.parent_concept_id] ||
+         allSugNodes.find(n => n.id === sn.parent_concept_id));
+      const key = parentInScope ? sn.parent_concept_id : 'root';
+      byParent[key] ||= [];
+      byParent[key].push(sn);
+    });
+
+    console.log('[ingest] allSugNodes:', allSugNodes.map(sn => ({ name: sn.name, parent_concept_id: sn.parent_concept_id, virtual: !!sn._isVirtual })));
+    console.log('[ingest] byParent keys:', Object.keys(byParent));
+    console.log('[ingest] byParent[root]:', (byParent['root'] || []).map(n => n.name));
+
+    // Recursive renderer
+    function renderNode(parentKey, depth, isLastArr) {
+      const children = (byParent[parentKey] || []);
+      children.forEach((node, idx) => {
+        const isLast = idx === children.length - 1;
+        const hasChildren = (byParent[node.id] || []).length > 0;
+
+        const wrap = document.createElement('div');
+
+        // Row
+        const row = document.createElement('div');
+        row.className = 'ingest-tree-row' + (node.isSuggested ? ' is-suggested state-' + node._state : ' is-existing');
+
+        // Indent + connectors
+        if (depth > 0) {
+          const indent = document.createElement('span');
+          indent.className = 'ingest-tree-indent';
+          // vertical continuation lines for ancestor levels
+          isLastArr.forEach(parentWasLast => {
+            const span = document.createElement('span');
+            span.style.cssText = `display:inline-block;width:16px;flex-shrink:0;${
+              parentWasLast ? '' : 'border-left:1px solid rgba(255,255,255,0.09);margin-left:0'
+            }`;
+            indent.appendChild(span);
+          });
+          const corner = document.createElement('span');
+          corner.className = isLast ? 'ingest-line-corner' : 'ingest-line-tee';
+          indent.appendChild(corner);
+          row.appendChild(indent);
+        }
+
+        const dot = document.createElement('span');
+        dot.className = 'ingest-tree-dot' + (node.isSuggested ? ' suggested state-' + node._state : ' existing');
+        row.appendChild(dot);
+
+        const name = document.createElement('span');
+        name.className = 'ingest-tree-name' + (node.isSuggested ? ' suggested' : ' existing');
+        name.textContent = node.name;
+        row.appendChild(name);
+
+        if (node.isSuggested) {
+          const badge = document.createElement('span');
+          badge.className = 'ingest-tree-type';
+          badge.textContent = node.block_type || 'definition';
+          row.appendChild(badge);
+
+          const acceptBtn = document.createElement('button');
+          acceptBtn.className = 'ingest-tree-btn ingest-tree-btn--accept';
+          acceptBtn.dataset.i = node._sugIdx;
+          acceptBtn.title = 'Accept';
+          acceptBtn.textContent = '✔';
+          acceptBtn.disabled = node._state === 'accepted';
+
+          const rejectBtn = document.createElement('button');
+          rejectBtn.className = 'ingest-tree-btn ingest-tree-btn--reject';
+          rejectBtn.dataset.i = node._sugIdx;
+          rejectBtn.title = 'Reject';
+          rejectBtn.textContent = '✖';
+          rejectBtn.disabled = node._state === 'rejected';
+
+          row.appendChild(acceptBtn);
+          row.appendChild(rejectBtn);
+
+          // Block content detail (toggle on click)
+          const detail = document.createElement('div');
+          detail.className = 'ingest-tree-detail';
+          detail.style.display = 'none';
+          const contentEl = document.createElement('div');
+          contentEl.className = 'ingest-tree-content';
+          contentEl.textContent = node.content;
+          detail.appendChild(contentEl);
+
+          row.addEventListener('click', e => {
+            if (e.target.closest('.ingest-tree-btn')) return;
+            detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+          });
+
+          wrap.appendChild(row);
+          wrap.appendChild(detail);
+        } else {
+          // Existing concept: just expander icon
+          const icon = document.createElement('span');
+          icon.className = 'ingest-tree-expander';
+          icon.textContent = hasChildren ? '▾' : '';
+          row.insertBefore(icon, dot);
+          wrap.appendChild(row);
+        }
+
+        listEl.appendChild(wrap);
+
+        // Recurse
+        if (byParent[node.id]) {
+          renderNode(node.id, depth + 1, [...isLastArr, isLast]);
+        }
+      });
+    }
+
+    renderNode('root', 0, []);
+
+    listEl.querySelectorAll('.ingest-tree-btn--accept').forEach(btn =>
+      btn.addEventListener('click', () => setSuggestionState(+btn.dataset.i, 'accepted'))
+    );
+    listEl.querySelectorAll('.ingest-tree-btn--reject').forEach(btn =>
+      btn.addEventListener('click', () => setSuggestionState(+btn.dataset.i, 'rejected'))
+    );
+  }
+
+  async function setSuggestionState(i, state) {
+    if (suggestions[i]._state === state) return;
+    const prev = suggestions[i]._state;
+    suggestions[i]._state = state;
+
+    if (state === 'accepted') {
+      try {
+        await commitSuggestion(suggestions[i]);
+      } catch (e) {
+        suggestions[i]._state = prev;
+        alert('Error creating concept/block: ' + e.message);
+      }
+    }
+    renderSuggestions();
+  }
+
+  async function commitSuggestion(s) {
+    const projectId = projectSel.value ? Number(projectSel.value) : null;
+    return commitByNode({ name: s.concept, parent_concept_name: s.parent_concept_name, content: s.content, block_type: s.block_type }, projectId);
+  }
+
+  // Commit a node (real suggestion or virtual) and return the new concept id
+  async function commitByNode(node, projectId) {
+    const lower = node.name.toLowerCase().trim();
+    if (committedByName[lower] !== undefined) return committedByName[lower];
+
+    const parentId = await resolveParentIdByName(node.parent_concept_name, projectId);
+
+    const cRes = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/concepts/new`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: node.name, parent_concept_id: parentId, project_id: projectId })
+    });
+    if (!cRes.ok) throw new Error(await cRes.text());
+    const { id: conceptId } = await cRes.json();
+    committedByName[lower] = conceptId;
+
+    if (node.content) {
+      const bRes = await fetch(`${KNOWLEDGE_API_BASE}/knowledge/block/new`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          concept_id: conceptId,
+          content: node.content,
+          block_type: node.block_type || 'definition',
+          project_id: projectId,
+          mode: null
+        })
+      });
+      if (!bRes.ok) throw new Error(await bRes.text());
+    }
+
+    loadConcepts();
+    return conceptId;
+  }
+
+  async function resolveParentIdByName(parentName, projectId) {
+    if (!parentName) return null;
+    const lower = parentName.toLowerCase().trim();
+
+    if (committedByName[lower] !== undefined) return committedByName[lower];
+
+    // Sidebar DOM
+    const all = document.querySelectorAll('#conceptTree .concept-item[data-concept-name]');
+    for (const el of all) {
+      if (el.dataset.conceptName === lower) return Number(el.dataset.conceptId);
+    }
+
+    // Another sugNode → auto-commit first
+    const norm = lower.replace(/\s+/g, '');
+    const parentNode = allSugNodes.find(n =>
+      n.name.toLowerCase().trim() === lower ||
+      n.name.toLowerCase().replace(/\s+/g, '') === norm
+    );
+    if (parentNode) return await commitByNode(parentNode, projectId);
+
+    return null;
+  }
+
+  // Bulk actions
+  acceptAll.addEventListener('click', async () => {
+    for (let i = 0; i < suggestions.length; i++) {
+      if (suggestions[i]._state === 'pending') await setSuggestionState(i, 'accepted');
+    }
+  });
+  rejectAll.addEventListener('click', () => {
+    suggestions.forEach((_, i) => { if (suggestions[i]._state === 'pending') suggestions[i]._state = 'rejected'; });
+    renderSuggestions();
+  });
+})();
+

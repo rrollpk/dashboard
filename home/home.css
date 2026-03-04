@@ -46,33 +46,161 @@
   grid-area: logs;
 }
 
+.home-rotator {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  overflow: hidden;
+}
+
+.home-rotator-track {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  transition: transform 420ms ease;
+  will-change: transform;
+}
+
+.home-rotator-panel {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.home-rotator-panel h3 {
+  margin-bottom: var(--spacing-xs);
+}
+
+.home-info-list {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.home-info-item {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  border: var(--border-thin) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.5rem;
+  background: var(--bg-tertiary);
+}
+
+.log-list {
+  list-style: none;
+  display: grid;
+  gap: var(--spacing-xs);
+  overflow: auto;
+  padding-right: 0.15rem;
+}
+
+.log-item {
+  border: var(--border-thin) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.5rem;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.log-message {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-time {
+  color: var(--text-tertiary);
+  font-size: var(--font-xs);
+  white-space: nowrap;
+}
+
+.home-rotator-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.home-rotator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  border: 0;
+  background: var(--border-color);
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.home-rotator-dot.is-active {
+  background: var(--accent-primary);
+  transform: scale(1.15);
+}
+
 .weather-widget {
   grid-area: weather;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  gap: var(--spacing-md);
-  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-md);
+  align-items: end;
   grid-template-areas: 
   "weather-hour weather-hour"
   "weather-temp weather-description";
+  background: var(--bg-tertiary);
+  border: var(--border-thin) solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  min-height: 108px;
 }
 
 
 
 .weather-temp {
   grid-area: weather-temp;
-  font-size: var(--font-2xl);
-  font-weight: bold;
+  font-size: clamp(1.45rem, 2.8vw, 2rem);
+  font-weight: 700;
+  line-height: 1;
   color: var(--accent-primary);
 }
 
 .weather-description {
     grid-area: weather-description;
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+    line-height: 1.35;
+    justify-self: start;
+    align-self: center;
 }
 
 .weather-hour {
     grid-area: weather-hour;
+    color: var(--text-tertiary);
+    font-size: var(--font-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 1100px) {
+  .weather-widget {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "weather-hour"
+      "weather-temp"
+      "weather-description";
+    align-items: start;
+    min-height: 0;
+  }
+
+  .weather-description {
+    justify-self: start;
+  }
 }
 
 
@@ -99,4 +227,41 @@
     color: var(--text-secondary);
     text-decoration: none;
     transition: background 0.2s;
+}
+
+#featuredEvents {
+  margin-top: 0.35rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.featured-event-row {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.featured-event-title {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.featured-event-when {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.72rem;
+  margin-top: 0.15rem;
+}
+
+.featured-events-empty {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 900px) {
+  #featuredEvents {
+    grid-template-columns: 1fr;
+  }
 }
