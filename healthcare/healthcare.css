@@ -1,4 +1,134 @@
 /* SHOPPING LIST STYLES */
+.healthcare-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.healthcare-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.water-container {
+  width: 100%;
+}
+
+.water-section {
+  background-color: #282539;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.water-section h2 {
+  margin: 0 0 1rem 0;
+  color: #fff;
+}
+
+.water-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #34304A;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.water-total-label {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+}
+
+.water-total-value {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.water-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.water-add-btn {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.92rem;
+}
+
+.water-status {
+  margin: 0.85rem 0 0 0;
+  min-height: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.weight-container {
+  width: 100%;
+}
+
+.weight-section {
+  background-color: #282539;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.weight-section h2 {
+  margin: 0 0 1rem 0;
+  color: #fff;
+}
+
+.weight-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #34304A;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.weight-total-label {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+}
+
+.weight-total-value {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.weight-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+
+.weight-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #34304A;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.weight-input:focus {
+  outline: none;
+  border-color: #5a4fcf;
+}
+
+.weight-status {
+  margin: 0.85rem 0 0 0;
+  min-height: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
 .shopping-container {
   max-width: 800px;
   margin: 0 auto;
@@ -162,4 +292,10 @@
     font-size: inherit;
     border: 2px solid #007bff;
     border-radius: 4px;
+}
+
+@media (max-width: 960px) {
+  .healthcare-layout {
+    grid-template-columns: 1fr;
+  }
 }
