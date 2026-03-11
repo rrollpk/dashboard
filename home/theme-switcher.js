@@ -1,22 +1,21 @@
 const themes = {
-    dark: 'Dark Mode',
-    light: 'Light Mode'
+    'dark-cyan': 'Dark - Cyan',
+    'light-cyan': 'Light - Cyan',
+    'dark-purple': 'Dark - Purple'
 }
 
-// Cargar tema guardado o usar dark por defecto
 function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'dark-cyan';
     setTheme(savedTheme);
     return savedTheme;
 }
 
-// Aplicar tema
 function setTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
     localStorage.setItem('theme', themeName);
 }
 
-// Poblar el selector con las opciones
+
 function populateThemeSelector() {
     const themeSelect = document.getElementById('themeSelect');
     
@@ -25,10 +24,8 @@ function populateThemeSelector() {
         return;
     }
     
-    // Limpiar opciones existentes
     themeSelect.innerHTML = '';
     
-    // Añadir opciones de temas
     Object.entries(themes).forEach(([key, label]) => {
         const option = document.createElement('option');
         option.value = key;
@@ -36,16 +33,13 @@ function populateThemeSelector() {
         themeSelect.appendChild(option);
     });
     
-    // Seleccionar tema actual
     themeSelect.value = loadTheme();
     
-    // Escuchar cambios
     themeSelect.addEventListener('change', (e) => {
         setTheme(e.target.value);
     });
 }
 
-// Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', populateThemeSelector);
 } else {
