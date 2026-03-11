@@ -13,8 +13,10 @@ function setWaterStatus(message, isError = false) {
 
 function setWaterTotal(totalMl) {
   const totalEl = document.getElementById("waterTotalValue");
-  if (!totalEl) return;
-  totalEl.textContent = `${Number(totalMl || 0)} ml`;
+  const btnEl = document.getElementById("waterBtnValue");
+  const text = `${Number(totalMl || 0)} ml`;
+  if (totalEl) totalEl.textContent = text;
+  if (btnEl) btnEl.textContent = text;
 }
 
 async function loadWaterToday() {

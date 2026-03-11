@@ -13,9 +13,11 @@ function setWeightStatus(message, isError = false) {
 
 function setWeightValue(weightKg) {
   const valueEl = document.getElementById("weightTodayValue");
-  if (!valueEl) return;
+  const btnEl = document.getElementById("weightBtnValue");
   const numeric = Number(weightKg);
-  valueEl.textContent = Number.isFinite(numeric) && numeric > 0 ? `${numeric} kg` : "-- kg";
+  const text = Number.isFinite(numeric) && numeric > 0 ? `${numeric} kg` : "-- kg";
+  if (valueEl) valueEl.textContent = text;
+  if (btnEl) btnEl.textContent = text;
 }
 
 async function loadTodayWeight() {

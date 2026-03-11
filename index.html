@@ -40,6 +40,11 @@
   <script defer src="healthcare/shopping.js"></script>
   <script defer src="healthcare/water.js"></script>
   <script defer src="healthcare/weight.js"></script>
+  <script defer src="healthcare/gym.js"></script>
+  <script defer src="healthcare/menu.js"></script>
+  <script defer src="healthcare/mental.js"></script>
+  <script defer src="healthcare/health-index.js"></script>
+  <script defer src="healthcare/healthcare-panels.js"></script>
   <script defer src="intel/intel.js"></script>
   <script defer src="rss/rss.js"></script>
 </head>
@@ -88,6 +93,26 @@
         </div>
         <div class="image-container">
           <img src="assets/filosofo-en-meditacion-1.jpg" alt="Filósofo en meditación">
+        </div>
+        <div class="box home-health-index">
+          <div class="health-index-header">
+            <h3>Welfare Index</h3>
+            <span class="health-index-current" id="homeHealthIndexCurrent">--</span>
+          </div>
+          <div class="health-index-chart" id="homeHealthIndexChart">
+            <svg class="health-line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="homeLineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#6c5ce7" stop-opacity="0.3" />
+                  <stop offset="100%" stop-color="#6c5ce7" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path class="chart-area" id="homeChartArea" d="" fill="url(#homeLineGradient)" />
+              <path class="chart-line" id="homeChartLine" d="" />
+              <g class="chart-dots" id="homeChartDots"></g>
+            </svg>
+            <div class="chart-labels" id="homeChartLabels"></div>
+          </div>
         </div>
         <div class="box" id="featured-news">
           <h3>Featured News</h3>
@@ -297,64 +322,62 @@
         <p>EN PROCESO</p>
       </div>
       <div class="content c6">
-        <div class="healthcare-layout">
-          <div class="healthcare-side">
-          <div class="water-container">
-            <div class="water-section">
-              <h2>Water Intake</h2>
-              <div class="water-total-row">
-                <span class="water-total-label">Today</span>
-                <span id="waterTotalValue" class="water-total-value">-- ml</span>
-              </div>
-
-              <div class="water-actions">
-                <button class="btn-primary water-add-btn" data-ml="250">+250 ml</button>
-                <button class="btn-primary water-add-btn" data-ml="500">+500 ml</button>
-                <button class="btn-primary water-add-btn" data-ml="750">+750 ml</button>
-              </div>
-
-              <p id="waterStatus" class="water-status" aria-live="polite"></p>
+        <div class="healthcare-hub">
+          <div class="healthcare-left">
+            <h2>Healthcare</h2>
+            <div class="healthcare-buttons">
+              <button class="healthcare-btn" data-panel="water">
+                <span class="healthcare-btn-icon">💧</span>
+                <span class="healthcare-btn-label">Water</span>
+                <span class="healthcare-btn-value" id="waterBtnValue">--</span>
+              </button>
+              <button class="healthcare-btn" data-panel="weight">
+                <span class="healthcare-btn-icon">⚖️</span>
+                <span class="healthcare-btn-label">Weight</span>
+                <span class="healthcare-btn-value" id="weightBtnValue">--</span>
+              </button>
+              <button class="healthcare-btn" data-panel="gym">
+                <span class="healthcare-btn-icon">🏋️</span>
+                <span class="healthcare-btn-label">Gym</span>
+                <span class="healthcare-btn-value" id="gymBtnValue">Routines</span>
+              </button>
+              <button class="healthcare-btn" data-panel="shopping">
+                <span class="healthcare-btn-icon">🛒</span>
+                <span class="healthcare-btn-label">Shopping</span>
+                <span class="healthcare-btn-value" id="shoppingBtnValue">--</span>
+              </button>
+              <button class="healthcare-btn" data-panel="menu">
+                <span class="healthcare-btn-icon">🍽️</span>
+                <span class="healthcare-btn-label">Menu</span>
+                <span class="healthcare-btn-value" id="menuBtnValue">Today</span>
+              </button>
+              <button class="healthcare-btn" data-panel="mental">
+                <span class="healthcare-btn-icon">🧠</span>
+                <span class="healthcare-btn-label">Mental</span>
+                <span class="healthcare-btn-value" id="mentalBtnValue">--</span>
+              </button>
             </div>
           </div>
-
-          <div class="weight-container">
-            <div class="weight-section">
-              <h2>Weight</h2>
-              <div class="weight-total-row">
-                <span class="weight-total-label">Today</span>
-                <span id="weightTodayValue" class="weight-total-value">-- kg</span>
-              </div>
-
-              <div class="weight-actions">
-                <input id="weightInput" class="weight-input" type="number" min="1" max="300" step="1" placeholder="e.g. 78">
-                <button id="saveWeightBtn" class="btn-primary">Save</button>
-              </div>
-
-              <p id="weightStatus" class="weight-status" aria-live="polite"></p>
+          <div class="healthcare-right">
+            <div class="health-index-header">
+              <h3>Welfare Index</h3>
+              <span class="health-index-current" id="healthIndexCurrent">--</span>
+            </div>
+            <div class="health-index-chart" id="healthIndexChart">
+              <svg class="health-line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#6c5ce7" stop-opacity="0.3" />
+                    <stop offset="100%" stop-color="#6c5ce7" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path class="chart-area" id="chartArea" d="" fill="url(#lineGradient)" />
+                <path class="chart-line" id="chartLine" d="" />
+                <g class="chart-dots" id="chartDots"></g>
+              </svg>
+              <div class="chart-labels" id="chartLabels"></div>
             </div>
           </div>
-
-          <div class="gym-container">
-            <div class="weight-section">
-              <h2>Gym</h2>
-              <p id="gymStatus" class="weight-status" aria-live="polite">Module ready to build</p>
-            </div>
-          </div>
-          </div>
-
-          <div class="shopping-container">
-          <div class="shopping-list-section">
-            <h2>Shopping List</h2>
-            <button id="addItemBtn" class="btn-primary">+ Add Items</button>
-            
-            <div id="itemSearchBox" class="search-box" style="display:none;">
-              <input type="text" id="searchInput" placeholder="Search items...">
-              <div id="searchResults" class="search-results"></div>
-            </div>
-
-            <ul id="shoppingList" class="shopping-list"></ul>
-          </div>
-        </div>
         </div>
       </div>
       <div class="content c7">
@@ -377,7 +400,214 @@
 
 </main>
 
-<!-- ====== INGEST MODAL ====== -->
+<!-- ====== HEALTHCARE PANELS ====== -->
+
+<!-- Water Panel -->
+<div id="waterPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal">
+    <div class="rel-header">
+      <span class="rel-title">💧 Water Intake</span>
+      <button class="rel-close" data-close="waterPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <div class="water-total-row">
+        <span class="water-total-label">Today</span>
+        <span id="waterTotalValue" class="water-total-value">-- ml</span>
+      </div>
+      <div class="water-actions">
+        <button class="btn-primary water-add-btn" data-ml="250">+250 ml</button>
+        <button class="btn-primary water-add-btn" data-ml="500">+500 ml</button>
+        <button class="btn-primary water-add-btn" data-ml="750">+750 ml</button>
+      </div>
+      <p id="waterStatus" class="water-status" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Weight Panel -->
+<div id="weightPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal">
+    <div class="rel-header">
+      <span class="rel-title">⚖️ Weight</span>
+      <button class="rel-close" data-close="weightPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <div class="weight-total-row">
+        <span class="weight-total-label">Today</span>
+        <span id="weightTodayValue" class="weight-total-value">-- kg</span>
+      </div>
+      <div class="weight-actions">
+        <input id="weightInput" class="weight-input" type="number" min="1" max="300" step="1" placeholder="e.g. 78">
+        <button id="saveWeightBtn" class="btn-primary">Save</button>
+      </div>
+      <p id="weightStatus" class="weight-status" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Gym Panel -->
+<div id="gymPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal healthcare-modal--large">
+    <div class="rel-header">
+      <span class="rel-title">🏋️ Gym</span>
+      <button class="rel-close" data-close="gymPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <p id="gymStatus" class="gym-status" aria-live="polite"></p>
+
+      <!-- Routine List -->
+      <div id="gymRoutineList" class="gym-view">
+        <h3>Routines</h3>
+        <div id="routineListContainer" class="routine-list"></div>
+      </div>
+
+      <!-- Routine Detail View -->
+      <div id="gymRoutineDetail" class="gym-view" style="display:none;">
+        <div class="session-header">
+          <button id="backToRoutineList" class="btn-tiny">← Back</button>
+          <h3 id="routineDetailTitle">Routine</h3>
+        </div>
+        <div id="routineExercisesList" class="exercise-list"></div>
+        <button id="startRoutineFromDetail" class="btn-primary">Start Workout</button>
+      </div>
+
+      <!-- Active Session View -->
+      <div id="gymSessionView" class="gym-view" style="display:none;">
+        <div class="session-header">
+          <button id="backToRoutines" class="btn-tiny">← Back</button>
+          <h3 id="sessionTitle">Today's Session</h3>
+        </div>
+        <div id="sessionExercises" class="exercise-list"></div>
+        <select id="addExerciseSelect" class="gym-select"></select>
+      </div>
+
+      <!-- Set Logger View -->
+      <div id="gymSetLogger" class="gym-view" style="display:none;">
+        <div class="session-header">
+          <button id="backToSession" class="btn-tiny">← Back</button>
+          <h3 id="setLoggerTitle">Log Sets</h3>
+        </div>
+        <div id="setsContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Shopping Panel -->
+<div id="shoppingPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal healthcare-modal--large">
+    <div class="rel-header">
+      <span class="rel-title">🛒 Shopping List</span>
+      <button class="rel-close" data-close="shoppingPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <button id="addItemBtn" class="btn-primary">+ Add Items</button>
+      
+      <div id="itemSearchBox" class="search-box" style="display:none;">
+        <input type="text" id="searchInput" placeholder="Search items...">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+
+      <ul id="shoppingList" class="shopping-list"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Menu Panel -->
+<div id="menuPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal healthcare-modal--large">
+    <div class="rel-header">
+      <span class="rel-title">🍽️ Menu</span>
+      <button class="rel-close" data-close="menuPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <div class="menu-tabs">
+        <button class="menu-tab active" data-view="today">Today</button>
+        <button class="menu-tab" data-view="week">Full Week</button>
+      </div>
+      <div id="menuTodayView" class="menu-view">
+        <h3 id="menuTodayTitle">Today's Menu</h3>
+        <div id="menuTodayList" class="menu-list"></div>
+      </div>
+      <div id="menuWeekView" class="menu-view" style="display:none;">
+        <div id="menuWeekList" class="menu-week-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mental Health Panel -->
+<div id="mentalPanel" class="rel-overlay" style="display:none;">
+  <div class="rel-modal healthcare-modal healthcare-modal--large">
+    <div class="rel-header">
+      <span class="rel-title">🧠 Mental Health</span>
+      <button class="rel-close" data-close="mentalPanel">✕</button>
+    </div>
+    <div class="healthcare-modal-body">
+      <div class="mental-tabs">
+        <button class="mental-tab active" data-view="log">Log Today</button>
+        <button class="mental-tab" data-view="history">History</button>
+      </div>
+
+      <!-- Log View -->
+      <div id="mentalLogView" class="mental-view">
+        <div class="mental-section">
+          <label class="mental-label">😊 Mood</label>
+          <div class="mental-mood-selector" id="moodSelector">
+            <button class="mood-btn" data-mood="1" title="Very Bad">😞</button>
+            <button class="mood-btn" data-mood="2" title="Bad">😕</button>
+            <button class="mood-btn" data-mood="3" title="Neutral">😐</button>
+            <button class="mood-btn" data-mood="4" title="Good">🙂</button>
+            <button class="mood-btn" data-mood="5" title="Great">😄</button>
+          </div>
+        </div>
+
+        <div class="mental-section">
+          <label class="mental-label">😴 Sleep Quality</label>
+          <div class="mental-sleep-row">
+            <input type="number" id="sleepHours" class="mental-input" placeholder="Hours" min="0" max="24" step="0.5">
+            <div class="mental-sleep-quality" id="sleepQualitySelector">
+              <button class="sleep-quality-btn" data-quality="1" title="Poor">😴</button>
+              <button class="sleep-quality-btn" data-quality="2" title="Fair">😑</button>
+              <button class="sleep-quality-btn" data-quality="3" title="Good">😌</button>
+              <button class="sleep-quality-btn" data-quality="4" title="Great">😊</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mental-section">
+          <label class="mental-label">😰 Stress Level</label>
+          <div class="mental-stress-selector" id="stressSelector">
+            <button class="stress-btn" data-stress="1" title="Very Low">1</button>
+            <button class="stress-btn" data-stress="2" title="Low">2</button>
+            <button class="stress-btn" data-stress="3" title="Medium">3</button>
+            <button class="stress-btn" data-stress="4" title="High">4</button>
+            <button class="stress-btn" data-stress="5" title="Very High">5</button>
+          </div>
+        </div>
+
+        <div class="mental-section">
+          <label class="mental-label">🧘 Mindfulness (minutes)</label>
+          <input type="number" id="mindfulnessMinutes" class="mental-input mental-input--wide" placeholder="0" min="0" max="480">
+        </div>
+
+        <div class="mental-section">
+          <label class="mental-label">📝 Journal Note (optional)</label>
+          <textarea id="mentalJournalNote" class="mental-textarea" placeholder="How are you feeling today?"></textarea>
+        </div>
+
+        <button id="saveMentalBtn" class="btn-primary mental-save-btn">Save Entry</button>
+        <p id="mentalStatus" class="mental-status" aria-live="polite"></p>
+      </div>
+
+      <!-- History View -->
+      <div id="mentalHistoryView" class="mental-view" style="display:none;">
+        <div id="mentalHistoryList" class="mental-history-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="ingestModal" class="rel-overlay" style="display:none;">
   <div class="rel-modal ingest-modal">
     <div class="rel-header">
@@ -387,7 +617,7 @@
       </div>
     </div>
     <div class="ingest-body">
-      <!-- LEFT: upload + config -->
+
       <div class="ingest-upload-panel">
         <div class="ingest-drop-area" id="ingestDropArea">
           <div class="ingest-drop-icon">📄</div>
@@ -408,7 +638,7 @@
         <button id="ingestRunBtn" class="ingest-run-btn" disabled>✨ Analyse &amp; Suggest</button>
         <div id="ingestStatus" class="ingest-status"></div>
       </div>
-      <!-- RIGHT: suggestions -->
+
       <div class="ingest-suggestions-panel">
         <div class="ingest-suggestions-header">
           <span class="ingest-suggestions-title">Suggestions</span>

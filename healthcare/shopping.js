@@ -33,7 +33,13 @@ async function loadAvailableItems() {
 // Renderizar lista actual
 function renderShoppingList() {
     const listEl = document.getElementById("shoppingList");
+    const btnEl = document.getElementById("shoppingBtnValue");
     listEl.innerHTML = "";
+
+    // Update button value
+    if (btnEl) {
+        btnEl.textContent = currentList.length > 0 ? `${currentList.length} items` : "Empty";
+    }
 
     if (currentList.length === 0) {
         listEl.innerHTML = "<li class='empty'>No items in list</li>";
