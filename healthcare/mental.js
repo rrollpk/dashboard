@@ -9,11 +9,8 @@
 
   let mentalIsUpdating = false;
   let currentEntry = {
-    mood: null,
     sleep_hours: null,
-    sleep_quality: null,
     stress: null,
-    mindfulness_minutes: 0,
     journal_note: ''
   };
 
@@ -28,9 +25,10 @@
     const btnEl = document.getElementById("mentalBtnValue");
     if (!btnEl) return;
 
-    if (currentEntry.mood) {
-      const moodEmojis = { 1: '😞', 2: '😕', 3: '😐', 4: '🙂', 5: '😄' };
-      btnEl.textContent = moodEmojis[currentEntry.mood] || '--';
+    if (currentEntry.stress) {
+      btnEl.textContent = `😰${currentEntry.stress}`;
+    } else if (currentEntry.sleep_hours) {
+      btnEl.textContent = `${currentEntry.sleep_hours}h`;
     } else {
       btnEl.textContent = '--';
     }
@@ -45,31 +43,6 @@
       if (btn.dataset[dataAttr] == value) {
         btn.classList.add('active');
       }
-    });
-  }
-
-  function setupMoodSelector() {
-    const container = document.getElementById('moodSelector');
-    if (!container) return;
-
-    container.querySelectorAll('.mood-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentEntry.mood = parseInt(btn.dataset.mood);
-        setActiveButton('#moodSelector', currentEntry.mood, 'mood');
-        updateBtnValue();
-      });
-    });
-  }
-
-  function setupSleepQualitySelector() {
-    const container = document.getElementById('sleepQualitySelector');
-    if (!container) return;
-
-    container.querySelectorAll('.sleep-quality-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentEntry.sleep_quality = parseInt(btn.dataset.quality);
-        setActiveButton('#sleepQualitySelector', currentEntry.sleep_quality, 'quality');
-      });
     });
   }
 
@@ -117,11 +90,8 @@
       const data = await response.json();
       if (data) {
         currentEntry = {
-          mood: data.mood || null,
           sleep_hours: data.sleep_hours || null,
-          sleep_quality: data.sleep_quality || null,
           stress: data.stress || null,
-          mindfulness_minutes: data.mindfulness_minutes || 0,
           journal_note: data.journal_note || ''
         };
         populateForm();
@@ -133,21 +103,13 @@
   }
 
   function populateForm() {
-    if (currentEntry.mood) {
-      setActiveButton('#moodSelector', currentEntry.mood, 'mood');
-    }
     if (currentEntry.sleep_hours) {
       const sleepInput = document.getElementById('sleepHours');
       if (sleepInput) sleepInput.value = currentEntry.sleep_hours;
     }
-    if (currentEntry.sleep_quality) {
-      setActiveButton('#sleepQualitySelector', currentEntry.sleep_quality, 'quality');
-    }
     if (currentEntry.stress) {
       setActiveButton('#stressSelector', currentEntry.stress, 'stress');
     }
-    const mindfulnessInput = document.getElementById('mindfulnessMinutes');
-    if (mindfulnessInput) mindfulnessInput.value = currentEntry.mindfulness_minutes || '';
     
     const journalInput = document.getElementById('mentalJournalNote');
     if (journalInput) journalInput.value = currentEntry.journal_note || '';
@@ -158,16 +120,14 @@
 
     // Gather form data
     const sleepHoursInput = document.getElementById('sleepHours');
-    const mindfulnessInput = document.getElementById('mindfulnessMinutes');
     const journalInput = document.getElementById('mentalJournalNote');
 
     currentEntry.sleep_hours = sleepHoursInput?.value ? parseFloat(sleepHoursInput.value) : null;
-    currentEntry.mindfulness_minutes = mindfulnessInput?.value ? parseInt(mindfulnessInput.value) : 0;
     currentEntry.journal_note = journalInput?.value || '';
 
-    // Validate
-    if (!currentEntry.mood) {
-      setMentalStatus("Please select your mood", true);
+    // Validate - need at least sleep or stress
+    if (!currentEntry.sleep_hours && !currentEntry.stress) {
+      setMentalStatus("Please enter sleep hours or stress level", true);
       return;
     }
 
@@ -225,17 +185,12 @@
       return;
     }
 
-    const moodEmojis = { 1: '😞', 2: '😕', 3: '😐', 4: '🙂', 5: '😄' };
-    const sleepEmojis = { 1: '😴', 2: '😑', 3: '😌', 4: '😊' };
-
     container.innerHTML = entries.map(entry => `
       <div class="mental-history-entry">
         <div class="mental-history-date">${formatDate(entry.date)}</div>
         <div class="mental-history-metrics">
-          <span class="mental-history-metric" title="Mood">${moodEmojis[entry.mood] || '--'}</span>
-          <span class="mental-history-metric" title="Sleep">${entry.sleep_hours || '--'}h ${sleepEmojis[entry.sleep_quality] || ''}</span>
+          <span class="mental-history-metric" title="Sleep">😴 ${entry.sleep_hours || '--'}h</span>
           <span class="mental-history-metric" title="Stress">😰 ${entry.stress || '--'}/5</span>
-          <span class="mental-history-metric" title="Mindfulness">🧘 ${entry.mindfulness_minutes || 0}m</span>
         </div>
         ${entry.journal_note ? `<div class="mental-history-note">${entry.journal_note}</div>` : ''}
       </div>
@@ -248,8 +203,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    setupMoodSelector();
-    setupSleepQualitySelector();
     setupStressSelector();
     setupTabSwitching();
 
