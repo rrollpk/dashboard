@@ -74,6 +74,7 @@ function renderTask(task) {
     checkbox.type = "checkbox";
     checkbox.checked = Boolean(task.completed);
     checkbox.dataset.taskId = task.occurrences_id;
+    checkbox.style.display = "none"; // Oculta el checkbox visualmente
 
     li.appendChild(checkbox);
     li.appendChild(task_span);
@@ -86,6 +87,17 @@ function renderTask(task) {
     li.addEventListener("dragstart", handleDragStart);
     li.addEventListener("dragend", handleDragEnd);
 
+    // Permite tachar/destachar haciendo clic en el texto o el li
+    li.addEventListener("click", (e) => {
+        // Evita conflicto con drag o clicks en botones internos
+        if (e.target.tagName === "INPUT") return;
+        const completed = !li.classList.contains("completed");
+        li.classList.toggle("completed", completed);
+        checkbox.checked = completed;
+        updateTaskCheckbox(task.occurrences_id, completed);
+    });
+
+    // Mantén el evento original por si acaso
     checkbox.addEventListener("change", () => {
         const completed = checkbox.checked;
         li.classList.toggle("completed", completed);
