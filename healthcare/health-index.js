@@ -4,7 +4,7 @@
 
   const CHART_WIDTH = 400;
   const CHART_HEIGHT = 200;
-  const PADDING = { top: 20, right: 10, bottom: 10, left: 10 };
+  const PADDING = { top: 32, right: 10, bottom: 10, left: 10 }; // Aumentado el top
 
   /**
    * Generate demo data for the last 30 days

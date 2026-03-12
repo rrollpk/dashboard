@@ -708,3 +708,18 @@
   border: 1px dashed rgba(255,255,255,0.08);
   border-radius: 8px;
 }
+
+#addExpectationBtn {
+  color: var(--text-primary);
+  background-color: var(--accent-primary);
+}
+
+#addCustomExpBtn {
+  color: var(--text-primary);
+  background-color: var(--accent-secondary);
+}
+
+#startPomodoroBtn {
+  color: var(--text-primary);
+  background-color: var(--accent-primary);
+}

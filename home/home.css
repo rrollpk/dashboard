@@ -32,6 +32,10 @@
   border: transparent 1px solid;
 }
 
+.home-health-index .health-index-chart {
+  background: var(--bg-primary); 
+}
+
 .home-health-index .health-index-header h3 {
   margin: 0;
   font-size: var(--font-md);
@@ -158,6 +162,7 @@
 
 #featured-news {
   grid-area: featured-news;
+
 }
 
 .featured-content {
@@ -206,6 +211,8 @@
 .home-info-list {
   display: grid;
   gap: var(--spacing-xs);
+  overflow: auto;
+  padding-right: 0.15rem;
 }
 
 .home-info-item {
@@ -235,12 +242,18 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-sm);
+  background: var(--bg-tertiary);
 }
 
 .log-message {
   flex: 1;
   min-width: 0;
 }
+
+
+
+
+
 
 .log-time {
   color: var(--text-tertiary);
@@ -276,13 +289,12 @@
 .weather-widget {
   grid-area: weather;
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: auto auto 1fr;
+  grid-template-rows: auto;
   gap: var(--spacing-xs) var(--spacing-md);
-  align-items: end;
+  align-items: center;
   grid-template-areas: 
-  "weather-description weather-description"
-  "weather-temp weather-hour";
+  "weather-description weather-temp weather-hour";
  
   border: transparent 1px solid;
   border-radius: var(--radius-lg);
@@ -294,16 +306,17 @@
 
 .weather-temp {
   grid-area: weather-temp;
-  font-size: var(--font-xl);
+  font-size: var(--font-3xl);
   font-weight: bold;
   color: var(--accent-primary);
+  font-style: italic;
 }
 
 .weather-description {
     grid-area: weather-description;
     color: var(--text-secondary);
-    font-size: var(--font-sm);
-    line-height: 1.35;
+  font-size: 2rem;
+  line-height: 1;
     justify-self: start;
     align-self: center;
 }
@@ -311,10 +324,13 @@
 .weather-hour {
     grid-area: weather-hour;
     color: var(--text-tertiary);
-    font-size: var(--font-xl);
+    font-size: var(--font-2xl);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     font-style: italic;
+  justify-self: end;
+    align-self: center;
+  text-align: center;
     
 }
 
@@ -336,13 +352,19 @@
 
 
 /* FEATURED NEWS */
+#featuredNews {
+  background-color: var(--bg-primary);
+  border: var(--border-thin) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
 
 #featuredNews a {
     display: block;
     color: var(--text-secondary);
     text-decoration: none;
     transition: background 0.2s;
-    background-color: var(--bg-tertiary);
+    background-color: var(--bg-secondary);
     border: var(--border-thin) solid var(--border-color);
     border-radius: var(--radius-md);
 }
@@ -397,4 +419,9 @@
   #featuredEvents {
     grid-template-columns: 1fr;
   }
+}
+
+
+#homeAdvice {
+  background: var(--bg-primary);
 }

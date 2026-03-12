@@ -130,8 +130,10 @@
           <div id="featuredNews"></div>
         </div>
         <div class="box featured-content"> 
-          <h3>Featured Content</h3> 
-          <div id="featuredEvents"></div>
+          <div id="featuredEvents">
+            <div id="todayEvents"></div>
+            <div id="upcomingEvents"></div>
+          </div>
         </div>
         <div class="box logs">
           <div id="homeRotator" class="home-rotator" aria-label="Home rotating panels">
@@ -200,11 +202,16 @@
         <div class="pomodoro-layout">
           <!-- LEFT SIDE: TIMER -->
           <div class="pomodoro-timer-side">
+            <div class="pomodoro-section">
+              <h3>Today's Working Sessions</h3>
+              <div id="todayPomodoros"></div>
+            </div>
+
             <!-- START FORM -->
             <div id="startForm" class="pomodoro-section">
-              <h2>Start Pomodoro</h2>
+              <h3>New Working Session</h3>
               <div class="form-group">
-                <label>Plan (what will you work on?)</label>
+                <label>Expected Structure</label>
                 <div id="expectationsList"></div>
                 <div class="exp-add-btns">
                   <button id="addExpectationBtn" class="btn-small">+ Project/Task</button>
@@ -241,11 +248,6 @@
                 <button id="changeFocusBtn" class="btn-secondary">Change Focus</button>
                 <button id="endBtn" class="btn-danger">End Block</button>
               </div>
-            </div>
-
-            <div class="pomodoro-section">
-              <h3>Today's Pomodoros</h3>
-              <div id="todayPomodoros"></div>
             </div>
           </div>
 
@@ -330,7 +332,7 @@
         </div>
       </div>
       <div class="content c5">
-        <p>EN PROCESO</p>
+        <!-- Content managed by JS -->
       </div>
       <div class="content c6">
         <div class="healthcare-hub">
@@ -392,17 +394,16 @@
         </div>
       </div>
       <div class="content c7">
-        <p>Contenido de la Tab 7</p>
+        <!-- Content managed by JS -->
       </div>
       <div class="content c8">
-        <p>Contenido de la Tab 8</p>
-
+        <!-- Content managed by JS -->
       </div>
       <div class="content c9">
-        <p>Contenido de la Tab 9</p>
+        <!-- Content managed by JS -->
       </div>
       <div class="content c10">
-        <p>Contenido de la Tab 10</p>
+        <!-- Content managed by JS -->
       </div>
 
     </div>

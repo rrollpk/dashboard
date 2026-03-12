@@ -772,7 +772,7 @@
    ============================== */
 
 .knowledge-content {
-  background: #1e1b2e;
+  background: var(--bg-primary);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 12px;
   padding: 1rem;

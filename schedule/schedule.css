@@ -323,7 +323,7 @@
 
 .hour-label {
   font-weight: 600;
-  color: var(--accent-primary);
+  color: var(--text-tertiary);
   font-size: 0.85em;
   text-align: right;
   padding-right: 5px;

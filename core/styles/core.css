@@ -5,6 +5,7 @@
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
   
   /* Border Radius */
   --radius-sm: 4px;
@@ -24,6 +25,7 @@
   --font-lg: 1.125rem;
   --font-xl: 1.25rem;
   --font-2xl: 1.5rem;
+  --font-3xl: 1.75rem;
   
   /* Transitions */
   --transition-fast: 0.15s ease;
