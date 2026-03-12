@@ -15,7 +15,6 @@ async function loadFeaturedNews() {
             link.textContent = article.title;
             link.className = 'featured-news-link';
             container.appendChild(link);
-            container.appendChild(document.createElement('br'));
         });
     } catch (err) {
         container.innerHTML = '<p>Error cargando noticias destacadas.</p>';

@@ -4,15 +4,31 @@ const themes = {
     'dark-purple': 'Dark - Purple'
 }
 
+const DEFAULT_THEME = 'dark-cyan';
+
+function normalizeTheme(themeName) {
+    return Object.prototype.hasOwnProperty.call(themes, themeName)
+        ? themeName
+        : DEFAULT_THEME;
+}
+
 function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark-cyan';
-    setTheme(savedTheme);
-    return savedTheme;
+    const savedTheme = localStorage.getItem('theme');
+    const attrTheme = document.documentElement.getAttribute('data-theme');
+    const initialTheme = normalizeTheme(savedTheme || attrTheme || DEFAULT_THEME);
+    setTheme(initialTheme);
+    return initialTheme;
 }
 
 function setTheme(themeName) {
-    document.documentElement.setAttribute('data-theme', themeName);
-    localStorage.setItem('theme', themeName);
+    const normalizedTheme = normalizeTheme(themeName);
+    document.documentElement.setAttribute('data-theme', normalizedTheme);
+    localStorage.setItem('theme', normalizedTheme);
+
+    const themeSelect = document.getElementById('themeSelect');
+    if (themeSelect && themeSelect.value !== normalizedTheme) {
+        themeSelect.value = normalizedTheme;
+    }
 }
 
 
@@ -33,7 +49,8 @@ function populateThemeSelector() {
         themeSelect.appendChild(option);
     });
     
-    themeSelect.value = loadTheme();
+    const activeTheme = loadTheme();
+    themeSelect.value = activeTheme;
     
     themeSelect.addEventListener('change', (e) => {
         setTheme(e.target.value);
