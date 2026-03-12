@@ -80,7 +80,8 @@ function fillInfoList(containerId, items) {
 
 function goToRotatorPanel(index) {
   const track = document.getElementById('homeRotatorTrack');
-  const dots = Array.from(document.querySelectorAll('.home-rotator-dot'));
+  const dotsWrap = document.getElementById('homeRotatorDots');
+  const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('.home-rotator-dot')) : [];
   if (!track || !dots.length) return;
 
   const panelCount = dots.length;
@@ -97,7 +98,8 @@ function goToRotatorPanel(index) {
 
 function startHomeRotator() {
   const track = document.getElementById('homeRotatorTrack');
-  const dots = document.querySelectorAll('.home-rotator-dot');
+  const dotsWrap = document.getElementById('homeRotatorDots');
+  const dots = dotsWrap ? dotsWrap.querySelectorAll('.home-rotator-dot') : [];
   if (!track || !dots.length) return;
 
   if (homeRotatorIntervalId) clearInterval(homeRotatorIntervalId);

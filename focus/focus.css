@@ -143,9 +143,9 @@
 
 #pomodoroProjects .project-item {
   list-style: none;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: rgba(255,255,255,0.02);
+  background: var(--bg-tertiary);
   transition: border-color 0.15s, background 0.15s, transform 0.15s;
 }
 
@@ -178,7 +178,7 @@
   height: 18px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.5);
+  color: var(--text-tertiary);
   font-size: 0.72rem;
   line-height: 1;
   padding: 0;
@@ -204,14 +204,14 @@
 
 #pomodoroProjects .project-name {
   font-size: 0.83rem;
-  color: rgba(255,255,255,0.88);
+  color: var(--text-primary);
   font-weight: 600;
   line-height: 1.2;
 }
 
 #pomodoroProjects .project-desc {
   font-size: 0.74rem;
-  color: rgba(255,255,255,0.44);
+  color: var(--text-tertiary);
   line-height: 1.2;
 }
 
@@ -219,11 +219,11 @@
 #pomodoroProjects .no-data {
   list-style: none;
   border-radius: 8px;
-  border: 1px dashed rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--border-color);
+  background: var(--bg-tertiary);
   padding: 0.5rem 0.65rem;
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--text-tertiary);
 }
 
 /* ===== NEW PROJECT FORM ===== */
@@ -250,15 +250,15 @@
 .pomodoro-projects-side .hint {
   margin: 0 0 0.45rem;
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-tertiary);
 }
 
 .new-project-form {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
@@ -271,9 +271,9 @@
 
 .new-project-input,
 .new-project-select {
-  background: #1a1830;
-  color: rgba(255,255,255,0.88);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
   padding: 0.38rem 0.65rem;
   font-size: 0.83rem;
@@ -287,7 +287,7 @@
   outline: none;
   border-color: rgba(72,187,120,0.55);
 }
-.new-project-input::placeholder { color: rgba(255,255,255,0.3); }
+.new-project-input::placeholder { color: var(--text-quaternary); }
 
 .new-project-select {
   appearance: none;
@@ -381,9 +381,9 @@
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.8);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   margin-bottom: 1rem;
@@ -408,13 +408,13 @@
   font-size: 0.85rem;
 }
 .focus-label {
-  color: rgba(255,255,255,0.45);
+  color: var(--text-tertiary);
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 #currentFocus {
-  color: rgba(255,255,255,0.8);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -425,12 +425,12 @@
   justify-content: space-between;
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
-  background: rgba(255,255,255,0.03);
+  background: var(--bg-tertiary);
   font-size: 0.82rem;
   margin-bottom: 0.25rem;
 }
-.pom-time { color: rgba(255,255,255,0.7); }
-.pom-dur  { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+.pom-time { color: var(--text-secondary); }
+.pom-dur  { color: var(--text-tertiary); font-size: 0.75rem; }
 
 /* ===== START FORM: expectation picker ===== */
 .exp-add-btns {
@@ -440,8 +440,8 @@
 }
 .btn-small--ghost {
   background: transparent;
-  border-color: rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.45);
+  border-color: var(--border-color);
+  color: var(--text-tertiary);
 }
 
 /* ===== PROJECT SCHEMAS ===== */
@@ -449,8 +449,8 @@
   margin-top: 0.4rem;
   padding: 0.7rem;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
 }
 
 .project-schema-row {
@@ -478,9 +478,9 @@
   box-sizing: border-box;
   padding: 0.6rem 0.7rem;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: #1a1830;
-  color: rgba(255,255,255,0.88);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 0.83rem;
   line-height: 1.35;
@@ -494,7 +494,7 @@
 .project-schema-status {
   margin-top: 0.4rem;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-tertiary);
   min-height: 1rem;
 }
 .btn-small--ghost:hover {
@@ -509,9 +509,9 @@
   gap: 0.3rem;
   margin-bottom: 0.4rem;
   padding: 0.4rem 0.5rem;
-  background: rgba(255,255,255,0.03);
+  background: var(--bg-tertiary);
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.07);
+  border: 1px solid var(--border-color);
 }
 .exp-project-select { flex: 1 1 auto; min-width: 0; order: 1; }
 .exp-weight          { flex: 0 0 46px; order: 2; }
@@ -519,9 +519,9 @@
 .exp-details         { flex: 0 0 100%; order: 4; }
 .exp-project-select {
   flex: 1;
-  background: #1e1b2e;
-  color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
   padding: 0.35rem 0.5rem;
   font-size: 0.82rem;
@@ -532,9 +532,9 @@
 }
 .exp-details {
   flex: 1.2;
-  background: #1e1b2e;
-  color: rgba(255,255,255,0.75);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
   padding: 0.35rem 0.5rem;
   font-size: 0.8rem;
@@ -542,13 +542,13 @@
 .exp-details:focus {
   outline: none;
   border-color: rgba(90,79,207,0.5);
-  color: rgba(255,255,255,0.9);
+  color: var(--text-primary);
 }
 .exp-weight {
   width: 46px;
-  background: #1e1b2e;
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
   padding: 0.35rem 0.4rem;
   font-size: 0.78rem;
@@ -556,9 +556,9 @@
 }
 .exp-custom-label {
   flex: 1 1 auto;
-  background: #1e1b2e;
-  color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
   padding: 0.35rem 0.5rem;
   font-size: 0.82rem;
@@ -568,11 +568,11 @@
   border-color: rgba(90,79,207,0.5);
 }
 .expectation-item--custom {
-  border-color: rgba(255,255,255,0.04);
-  background: rgba(255,255,255,0.015);
+  border-color: var(--border-color);
+  background: var(--bg-tertiary);
 }
 .exp-row--custom .exp-row-label {
-  color: rgba(255,255,255,0.55);
+  color: var(--text-tertiary);
   font-style: italic;
 }
 
@@ -584,7 +584,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-quaternary);
   margin-bottom: 0.3rem;
 }
 .exp-table-rows {
@@ -598,7 +598,7 @@
   gap: 0.15rem;
   padding: 0.35rem 0.6rem;
   border-radius: 7px;
-  background: rgba(255,255,255,0.03);
+  background: var(--bg-tertiary);
   font-size: 0.82rem;
   border: 1px solid transparent;
   transition: background 0.15s;
@@ -614,14 +614,14 @@
 }
 .exp-row-label {
   flex: 1;
-  color: rgba(255,255,255,0.8);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .exp-row--active .exp-row-label { color: #c4b5fd; font-weight: 600; }
 .exp-row-weight {
-  color: rgba(255,255,255,0.3);
+  color: var(--text-quaternary);
   font-size: 0.72rem;
 }
 .exp-row-badge {
@@ -632,7 +632,7 @@
 }
 .exp-row-details {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-tertiary);
   padding-left: 0.1rem;
   font-style: italic;
   white-space: nowrap;
@@ -658,10 +658,10 @@
   width: 100%;
   padding: 0.5rem 0.75rem;
   text-align: left;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: rgba(255,255,255,0.8);
+  color: var(--text-secondary);
   font-size: 0.83rem;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -682,19 +682,19 @@
 .focus-pick-details {
   width: 100%;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-tertiary);
   font-style: italic;
   padding-left: 0.1rem;
 }
 .focus-pick-btn:hover .focus-pick-details { color: rgba(196,181,253,0.55); }
 .focus-pick-weight {
   margin-left: auto;
-  color: rgba(255,255,255,0.3);
+  color: var(--text-quaternary);
   font-size: 0.72rem;
 }
 .focus-panel-empty {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-quaternary);
   padding: 0.4rem 0;
 }
 .focus-pick-custom {
@@ -703,9 +703,9 @@
   gap: 0.4rem;
   padding: 0.4rem 0.75rem;
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-quaternary);
   font-style: italic;
-  border: 1px dashed rgba(255,255,255,0.08);
+  border: 1px dashed var(--border-color);
   border-radius: 8px;
 }
 

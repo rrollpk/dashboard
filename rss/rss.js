@@ -25,28 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabContent = document.querySelector('.content.c5');
   if (!tabContent) return;
 
-  tabContent.innerHTML = `
-    <div class="rss-layout">
-      <div class="rss-header">
-        <div class="rss-tabs">
-          ${RSS_CATEGORIES.map(c => `
-            <button class="rss-tab${c.key === rssActiveCategory ? ' active' : ''}" data-cat="${c.key}">
-              ${c.label}
-            </button>`).join('')}
-        </div>
-        <div class="rss-controls">
-          <select id="rssLimitSelect" class="rss-limit-select">
-            <option value="10">10</option>
-            <option value="20" selected>20</option>
-            <option value="50">50</option>
-          </select>
-          <button id="rssRefreshBtn" class="rss-refresh-btn" title="Refresh">↻</button>
-        </div>
-      </div>
-      <div id="rssFeed" class="rss-feed"></div>
-    </div>
-  `;
-
   tabContent.querySelectorAll('.rss-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       tabContent.querySelectorAll('.rss-tab').forEach(b => b.classList.remove('active'));

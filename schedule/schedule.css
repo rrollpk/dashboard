@@ -47,18 +47,19 @@
 }
 
 .schedule-create-btn {
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.88);
-  border-radius: 8px;
+  border: var(--border-thin) solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
   padding: 0.28rem 0.65rem;
   font-size: 0.78rem;
   cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .schedule-create-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.55);
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
 }
 
 .month-calendar-box {
@@ -69,7 +70,7 @@
 .month-calendar-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.88);
+  color: var(--text-primary);
   margin-bottom: 0;
   text-align: center;
   flex: 1;
@@ -86,18 +87,19 @@
   width: 24px;
   height: 24px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.8);
+  border: var(--border-thin) solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
   cursor: pointer;
   line-height: 1;
   font-size: 0.95rem;
   padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .month-calendar-nav:hover {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.55);
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
 }
 
 .month-calendar-weekdays,
@@ -109,7 +111,7 @@
 
 .month-calendar-weekdays span {
   font-size: 0.66rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-tertiary);
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -126,36 +128,37 @@
   align-items: center;
   justify-content: center;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.78);
-  background: rgba(255,255,255,0.03);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
   border: 1px solid transparent;
   cursor: pointer;
+  transition: background var(--transition-fast);
 }
 
 .month-day:hover {
-  background: rgba(255,255,255,0.08);
+  background: var(--bg-hover);
 }
 
 .month-day.other-month {
-  color: rgba(255,255,255,0.38);
-  background: rgba(255,255,255,0.015);
+  color: var(--text-quaternary);
+  background: transparent;
 }
 
 .month-day.other-month:hover {
-  background: rgba(255,255,255,0.06);
+  background: var(--bg-hover);
 }
 
 .month-day.today {
-  background: rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.6);
-  color: #cdd8ff;
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-solid);
   font-weight: 700;
 }
 
 .month-day.selected {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  color: #e9d8fd;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -200,32 +203,33 @@
 }
 
 .slot-task-title {
-  background: rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #e0e0e0;
+  background: var(--bg-primary);
+  border: var(--border-thin) solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 0.82em;
   text-align: left;
   cursor: pointer;
+  transition: border-color var(--transition-fast);
 }
 
 .slot-task-title:hover {
-  border-color: rgba(255,255,255,0.2);
+  border-color: var(--accent-primary);
 }
 .slot-add-btn {
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.05);
-  color: var(--bg-tertiary);
+  border: var(--border-thin) solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
   border-radius: 6px;
   cursor: pointer;
 }
 .slot-task-duration,
 	slot-task-delete,
 	slot-add-btn {
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.05);
-  color: var(--bg-tertiary);
+  border: var(--border-thin) solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -266,22 +270,23 @@
   width: 100%;
   padding: 6px 6px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-primary);
+  border: var(--border-thin) solid var(--border-color);
   border-radius: 6px;
-  color: #d8d8e8;
+  color: var(--text-secondary);
   font-size: 0.76em;
   outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .time-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-light);
 }
 
 .schedule {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
   padding: 20px;
   height: 100%;
   display: flex;
@@ -313,7 +318,7 @@
 }
 
 .hour-slot:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-hover);
 }
 
 .hour-slot.current-hour {
@@ -336,10 +341,10 @@
 .activity-input {
   width: 100%;
   padding: 6px 10px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-primary);
+  border: var(--border-thin) solid var(--border-color);
   border-radius: 6px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 0.85em;
   outline: none;
   transition: all 0.2s ease;
@@ -362,18 +367,18 @@
 }
 
 .activity-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-quaternary);
 }
 
 .activity-input:focus {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-light);
 }
 
 .activity-input:not(:placeholder-shown) {
-  background: rgba(102, 126, 234, 0.1);
-  border-color: rgba(102, 126, 234, 0.3);
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
 }
 
 /* Scrollbar styling */
@@ -382,17 +387,18 @@
 }
 
 .schedule-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-primary);
   border-radius: 4px;
 }
 
 .schedule-container::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.5);
+  background: var(--accent-primary);
   border-radius: 4px;
+  opacity: 0.5;
 }
 
 .schedule-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.7);
+  background: var(--accent-hover);
 }
 
 .task-list {

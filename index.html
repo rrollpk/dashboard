@@ -1,32 +1,25 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  
-  <!-- Core Styles -->
+
   <link rel="stylesheet" href="core/styles/themes.css">
   <link rel="stylesheet" href="core/styles/core.css">
-  
-  <!-- Old styles (temporal, hasta migrar) -->
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home/home.css">
   <link rel="stylesheet" href="schedule/schedule.css">
   <link rel="stylesheet" href="focus/focus.css">
   <link rel="stylesheet" href="intel/intel.css">
   <link rel="stylesheet" href="healthcare/healthcare.css">
   <link rel="stylesheet" href="rss/rss.css">
-  
-  <!-- KaTeX -->
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
-  <!-- Marked (Markdown parser) -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-  
-  <!-- Old scripts (temporal) -->
+
   <script defer src="core/core.js"></script>
   <script defer src="home/weather-time.js"></script>
   <script defer src="home/logs.js"></script>
@@ -49,10 +42,8 @@
 </head>
 
 <body>
-
 <main>
 
-  <!-- TABS -->
   <div class="tabs">
     <input type="radio" name="tab" id="tab1" checked>
     <input type="radio" name="tab" id="tab2">
@@ -76,7 +67,6 @@
       <label for="tab8">Leisure</label>
       <label for="tab9">Plaza</label>
       <label for="tab10">System</label>
-      
     </div>
 
     <div class="tab-content">
@@ -86,7 +76,7 @@
           <label for="themeSelect"></label>
           <select id="themeSelect"></select>
         </div>
-        
+
         <div class="box trading-chart-container">
           <div class="trading-chart-header">
             <h3>Trading</h3>
@@ -105,6 +95,7 @@
             </svg>
           </div>
         </div>
+
         <div class="box home-health-index">
           <div class="health-index-header">
             <h3>Welfare Index</h3>
@@ -125,16 +116,30 @@
             <div class="chart-labels" id="homeChartLabels"></div>
           </div>
         </div>
+
         <div class="box" id="featured-news">
-          <h3>Featured News</h3>
-          <div id="featuredNews"></div>
+          <div id="featuredRotator" class="home-rotator" aria-label="Featured rotating panels">
+            <div id="featuredRotatorTrack" class="home-rotator-track">
+              <section class="home-rotator-panel" aria-label="Featured news panel">
+                <h3>Featured Papers</h3>
+                <div id="featuredNews"></div>
+              </section>
+              <section class="home-rotator-panel" aria-label="Featured W panel">
+                <h3>Featured News</h3>
+                <div id="featuredW" class="home-info-list"></div>
+              </section>
+            </div>
+            <div id="featuredRotatorDots" class="home-rotator-dots" aria-label="Featured panel navigation"></div>
+          </div>
         </div>
-        <div class="box featured-content"> 
+
+        <div class="box featured-content">
           <div id="featuredEvents">
             <div id="todayEvents"></div>
             <div id="upcomingEvents"></div>
           </div>
         </div>
+
         <div class="box logs">
           <div id="homeRotator" class="home-rotator" aria-label="Home rotating panels">
             <div id="homeRotatorTrack" class="home-rotator-track">
@@ -142,49 +147,48 @@
                 <h3>Logs</h3>
                 <ul id="logs" class="log-list"></ul>
               </section>
-
               <section class="home-rotator-panel" aria-label="AI advice panel">
-                <h3>AI Powered Advice</h3>
+                <h3>Pandanotisias</h3>
                 <div id="homeAdvice" class="home-info-list"></div>
               </section>
-
               <section class="home-rotator-panel" aria-label="Focus tips panel">
                 <h3>Focus Tips</h3>
                 <div id="homeFocusTips" class="home-info-list"></div>
               </section>
-
               <section class="home-rotator-panel" aria-label="System tips panel">
                 <h3>System Notes</h3>
                 <div id="homeSystemTips" class="home-info-list"></div>
               </section>
             </div>
-
             <div id="homeRotatorDots" class="home-rotator-dots" aria-label="Panel navigation"></div>
           </div>
         </div>
-          
+
         <div class="box weather-widget">
-            <div class="weather-temp">--°C</div>
-            <div class="weather-description">Loading...</div>
-            <div class="weather-hour">--:--</div>
+          <div class="weather-temp">--&#xB0;C</div>
+          <div class="weather-description">...</div>
+          <div class="weather-hour">--:--</div>
         </div>
       </div>
 
       <div class="content c2">
         <div class="box month-calendar-box">
           <div class="month-calendar-header">
-            <button id="monthCalendarPrev" class="month-calendar-nav" title="Previous month">‹</button>
+            <button id="monthCalendarPrev" class="month-calendar-nav" title="Previous month">&#8249;</button>
             <div id="monthCalendarTitle" class="month-calendar-title">Month</div>
-            <button id="monthCalendarNext" class="month-calendar-nav" title="Next month">›</button>
+            <button id="monthCalendarNext" class="month-calendar-nav" title="Next month">&#8250;</button>
           </div>
           <div class="month-calendar-weekdays">
             <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
           </div>
           <div id="monthCalendarGrid" class="month-calendar-grid"></div>
         </div>
-        <div class="box tasks-box">  <h2>Daily Tasks</h2>
+
+        <div class="box tasks-box">
+          <h2>Daily Tasks</h2>
           <ul id="task"></ul>
         </div>
+
         <div class="box calendar-box">
           <div class="schedule-header">
             <h2 id="scheduleDate">Calendar</h2>
@@ -200,14 +204,13 @@
 
       <div class="content c3">
         <div class="pomodoro-layout">
-          <!-- LEFT SIDE: TIMER -->
+
           <div class="pomodoro-timer-side">
             <div class="pomodoro-section">
               <h3>Today's Working Sessions</h3>
               <div id="todayPomodoros"></div>
             </div>
 
-            <!-- START FORM -->
             <div id="startForm" class="pomodoro-section">
               <h3>New Working Session</h3>
               <div class="form-group">
@@ -221,19 +224,19 @@
               <button id="startPomodoroBtn" class="btn-primary">Start Session</button>
             </div>
 
-            <div id="activePomodoro" class="pomodoro-section" style="display:none;">
+            <div id="activePomodoro" class="pomodoro-section" style="display: none;">
               <div class="dual-timer-row">
                 <div id="studyTimerBlock" class="timer-block timer-study timer-active">
-                  <div class="timer-label">📚 Study</div>
+                  <div class="timer-label">&#x1F4DA; Study</div>
                   <div id="studyTimerDisplay" class="timer-display">3:00:00</div>
                 </div>
                 <div id="restTimerBlock" class="timer-block timer-rest timer-paused">
-                  <div class="timer-label">☕ Rest</div>
+                  <div class="timer-label">&#x2615; Rest</div>
                   <div id="restTimerDisplay" class="timer-display">30:00</div>
                 </div>
               </div>
 
-              <button id="switchBtn" class="btn-switch-mode">⏸ Pause study · Start rest →</button>
+              <button id="switchBtn" class="btn-switch-mode">&#x23F8; Pause study &#xB7; Start rest &#x2192;</button>
 
               <div class="focus-display">
                 <span class="focus-label">Focus: </span>
@@ -241,8 +244,7 @@
               </div>
 
               <div id="expectationsTable" class="expectations-table"></div>
-
-              <div id="changeFocusPanel" class="change-focus-panel" style="display:none;"></div>
+              <div id="changeFocusPanel" class="change-focus-panel" style="display: none;"></div>
 
               <div class="controls">
                 <button id="changeFocusBtn" class="btn-secondary">Change Focus</button>
@@ -255,21 +257,21 @@
             <div class="pomodoro-section">
               <div class="projects-header">
                 <h2>Index Projects</h2>
-                <button id="newProjectBtn" class="kb-btn kb-btn--concept" title="New project">＋ New</button>
-                <button id="projectSchemasBtn" class="kb-btn kb-btn--relations" title="Open project schemas">🧩 Schemas</button>
+                <button id="newProjectBtn" class="kb-btn kb-btn--concept" title="New project">&#xFF0B; New</button>
+                <button id="projectSchemasBtn" class="kb-btn kb-btn--relations" title="Open project schemas">&#x1F9E9; Schemas</button>
               </div>
 
-              <div id="newProjectForm" class="new-project-form" style="display:none;">
+              <div id="newProjectForm" class="new-project-form" style="display: none;">
                 <input id="newProjectName" type="text" placeholder="Project name" class="new-project-input">
                 <select id="newProjectParent" class="new-project-select"></select>
                 <select id="newProjectType" class="new-project-select">
-                  <option value="project">📁 Project</option>
-                  <option value="task">📄 Task</option>
+                  <option value="project">&#x1F4C1; Project</option>
+                  <option value="task">&#x1F4C4; Task</option>
                 </select>
                 <input id="newProjectDesc" type="text" placeholder="Description (optional)" class="new-project-input">
                 <div class="new-project-actions">
                   <button id="newProjectSave" class="kb-btn kb-btn--concept">Save</button>
-                  <button id="newProjectCancel" class="kb-btn" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">Cancel</button>
+                  <button id="newProjectCancel" class="kb-btn kb-btn--ghost">Cancel</button>
                 </div>
               </div>
 
@@ -280,19 +282,20 @@
               <h3>Archived Projects</h3>
             </div>
           </div>
+
         </div>
       </div>
-      
+
       <div class="content c4">
         <div class="knowledge-layout">
           <aside id="knowledgeSidebar" class="knowledge-sidebar">
             <div class="knowledge-sidebar-header">
-              <button id="knowledgeToggle" class="knowledge-toggle" title="Collapse sidebar">‹</button>
+              <button id="knowledgeToggle" class="knowledge-toggle" title="Collapse sidebar">&#8249;</button>
               <div class="knowledge-sidebar-actions">
-                <button id="addConceptBtn" class="kb-btn kb-btn--concept" title="New Concept or Block">＋ Add</button>
-                <button id="ingestBtn" class="kb-btn kb-btn--ingest" title="Ingest document and get suggestions">↥ Ingest</button>
-                <button id="modifyConceptBtn" class="kb-btn kb-btn--modify" title="Modify block contents">✎ Contents</button>
-                <button id="modifyBlockBtn" class="kb-btn kb-btn--relations" title="Modify block relations">⇄ Relations</button>
+                <button id="addConceptBtn" class="kb-btn kb-btn--concept" title="New Concept or Block">&#xFF0B; Add</button>
+                <button id="ingestBtn" class="kb-btn kb-btn--ingest" title="Ingest document and get suggestions">&#x21A5; Ingest</button>
+                <button id="modifyConceptBtn" class="kb-btn kb-btn--modify" title="Modify block contents">&#x270E; Contents</button>
+                <button id="modifyBlockBtn" class="kb-btn kb-btn--relations" title="Modify block relations">&#x21C4; Relations</button>
               </div>
             </div>
 
@@ -301,7 +304,6 @@
                 <select id="projectSelect"></select>
               </div>
               <div class="mode-filter">
-
                 <select id="modeSelect">
                   <option value="">Mode</option>
                   <option value="exam">Exam</option>
@@ -310,19 +312,13 @@
               <div class="block-type-filter">
                 <div id="blockTypeFilters"></div>
               </div>
-
               <div class="concept-type-filter">
                 <div class="concept-type-header">
                   <label class="knowledge-label">Concepts</label>
-                  <input type="text" id="conceptSearch" class="concept-search-input" placeholder="Search…">
+                  <input type="text" id="conceptSearch" class="concept-search-input" placeholder="Search&#x2026;">
                 </div>
                 <div id="conceptTree" class="concept-tree"></div>
               </div>
-
-              
-            
-
-              
             </div>
           </aside>
 
@@ -331,46 +327,68 @@
           </section>
         </div>
       </div>
+
       <div class="content c5">
-        <!-- Content managed by JS -->
+        <div class="rss-layout">
+          <div class="rss-header">
+            <div class="rss-tabs">
+              <button class="rss-tab active" data-cat="global">&#x1F310; Global</button>
+              <button class="rss-tab" data-cat="ml">&#x1F916; ML</button>
+              <button class="rss-tab" data-cat="markets">&#x1F4C8; Markets</button>
+              <button class="rss-tab" data-cat="quant">&#x1F4D0; Quant</button>
+              <button class="rss-tab" data-cat="politics">&#x1F3DB; Politics</button>
+            </div>
+            <div class="rss-controls">
+              <select id="rssLimitSelect" class="rss-limit-select">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+              <button id="rssRefreshBtn" class="rss-refresh-btn" title="Refresh">&#x21BB;</button>
+            </div>
+          </div>
+          <div id="rssFeed" class="rss-feed"></div>
+        </div>
       </div>
+
       <div class="content c6">
         <div class="healthcare-hub">
           <div class="healthcare-left">
             <h2>Healthcare</h2>
             <div class="healthcare-buttons">
               <button class="healthcare-btn" data-panel="water">
-                <span class="healthcare-btn-icon">💧</span>
+                <span class="healthcare-btn-icon">&#x1F4A7;</span>
                 <span class="healthcare-btn-label">Water</span>
                 <span class="healthcare-btn-value" id="waterBtnValue">--</span>
               </button>
               <button class="healthcare-btn" data-panel="weight">
-                <span class="healthcare-btn-icon">⚖️</span>
+                <span class="healthcare-btn-icon">&#x2696;&#xFE0F;</span>
                 <span class="healthcare-btn-label">Weight</span>
                 <span class="healthcare-btn-value" id="weightBtnValue">--</span>
               </button>
               <button class="healthcare-btn" data-panel="gym">
-                <span class="healthcare-btn-icon">🏋️</span>
+                <span class="healthcare-btn-icon">&#x1F3CB;&#xFE0F;</span>
                 <span class="healthcare-btn-label">Gym</span>
                 <span class="healthcare-btn-value" id="gymBtnValue">Routines</span>
               </button>
               <button class="healthcare-btn" data-panel="shopping">
-                <span class="healthcare-btn-icon">🛒</span>
+                <span class="healthcare-btn-icon">&#x1F6D2;</span>
                 <span class="healthcare-btn-label">Shopping</span>
                 <span class="healthcare-btn-value" id="shoppingBtnValue">--</span>
               </button>
               <button class="healthcare-btn" data-panel="menu">
-                <span class="healthcare-btn-icon">🍽️</span>
+                <span class="healthcare-btn-icon">&#x1F37D;&#xFE0F;</span>
                 <span class="healthcare-btn-label">Menu</span>
                 <span class="healthcare-btn-value" id="menuBtnValue">Today</span>
               </button>
               <button class="healthcare-btn" data-panel="mental">
-                <span class="healthcare-btn-icon">🧠</span>
+                <span class="healthcare-btn-icon">&#x1F9E0;</span>
                 <span class="healthcare-btn-label">Mental</span>
                 <span class="healthcare-btn-value" id="mentalBtnValue">--</span>
               </button>
             </div>
           </div>
+
           <div class="healthcare-right">
             <div class="health-index-header">
               <h3>Welfare Index</h3>
@@ -393,33 +411,21 @@
           </div>
         </div>
       </div>
-      <div class="content c7">
-        <!-- Content managed by JS -->
-      </div>
-      <div class="content c8">
-        <!-- Content managed by JS -->
-      </div>
-      <div class="content c9">
-        <!-- Content managed by JS -->
-      </div>
-      <div class="content c10">
-        <!-- Content managed by JS -->
-      </div>
+
+      <div class="content c7"></div>
+      <div class="content c8"></div>
+      <div class="content c9"></div>
+      <div class="content c10"></div>
 
     </div>
-
   </div>
-
 </main>
 
-<!-- ====== HEALTHCARE PANELS ====== -->
-
-<!-- Water Panel -->
-<div id="waterPanel" class="rel-overlay" style="display:none;">
+<div id="waterPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal">
     <div class="rel-header">
-      <span class="rel-title">💧 Water Intake</span>
-      <button class="rel-close" data-close="waterPanel">✕</button>
+      <span class="rel-title">&#x1F4A7; Water Intake</span>
+      <button class="rel-close" data-close="waterPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <div class="water-total-row">
@@ -436,12 +442,11 @@
   </div>
 </div>
 
-<!-- Weight Panel -->
-<div id="weightPanel" class="rel-overlay" style="display:none;">
+<div id="weightPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal">
     <div class="rel-header">
-      <span class="rel-title">⚖️ Weight</span>
-      <button class="rel-close" data-close="weightPanel">✕</button>
+      <span class="rel-title">&#x2696;&#xFE0F; Weight</span>
+      <button class="rel-close" data-close="weightPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <div class="weight-total-row">
@@ -457,46 +462,41 @@
   </div>
 </div>
 
-<!-- Gym Panel -->
-<div id="gymPanel" class="rel-overlay" style="display:none;">
+<div id="gymPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
-      <span class="rel-title">🏋️ Gym</span>
-      <button class="rel-close" data-close="gymPanel">✕</button>
+      <span class="rel-title">&#x1F3CB;&#xFE0F; Gym</span>
+      <button class="rel-close" data-close="gymPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <p id="gymStatus" class="gym-status" aria-live="polite"></p>
 
-      <!-- Routine List -->
       <div id="gymRoutineList" class="gym-view">
         <h3>Routines</h3>
         <div id="routineListContainer" class="routine-list"></div>
       </div>
 
-      <!-- Routine Detail View -->
-      <div id="gymRoutineDetail" class="gym-view" style="display:none;">
+      <div id="gymRoutineDetail" class="gym-view" style="display: none;">
         <div class="session-header">
-          <button id="backToRoutineList" class="btn-tiny">← Back</button>
+          <button id="backToRoutineList" class="btn-tiny">&#x2190; Back</button>
           <h3 id="routineDetailTitle">Routine</h3>
         </div>
         <div id="routineExercisesList" class="exercise-list"></div>
         <button id="startRoutineFromDetail" class="btn-primary">Start Workout</button>
       </div>
 
-      <!-- Active Session View -->
-      <div id="gymSessionView" class="gym-view" style="display:none;">
+      <div id="gymSessionView" class="gym-view" style="display: none;">
         <div class="session-header">
-          <button id="backToRoutines" class="btn-tiny">← Back</button>
+          <button id="backToRoutines" class="btn-tiny">&#x2190; Back</button>
           <h3 id="sessionTitle">Today's Session</h3>
         </div>
         <div id="sessionExercises" class="exercise-list"></div>
         <select id="addExerciseSelect" class="gym-select"></select>
       </div>
 
-      <!-- Set Logger View -->
-      <div id="gymSetLogger" class="gym-view" style="display:none;">
+      <div id="gymSetLogger" class="gym-view" style="display: none;">
         <div class="session-header">
-          <button id="backToSession" class="btn-tiny">← Back</button>
+          <button id="backToSession" class="btn-tiny">&#x2190; Back</button>
           <h3 id="setLoggerTitle">Log Sets</h3>
         </div>
         <div id="setsContainer"></div>
@@ -505,32 +505,28 @@
   </div>
 </div>
 
-<!-- Shopping Panel -->
-<div id="shoppingPanel" class="rel-overlay" style="display:none;">
+<div id="shoppingPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
-      <span class="rel-title">🛒 Shopping List</span>
-      <button class="rel-close" data-close="shoppingPanel">✕</button>
+      <span class="rel-title">&#x1F6D2; Shopping List</span>
+      <button class="rel-close" data-close="shoppingPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <button id="addItemBtn" class="btn-primary">+ Add Items</button>
-      
-      <div id="itemSearchBox" class="search-box" style="display:none;">
+      <div id="itemSearchBox" class="search-box" style="display: none;">
         <input type="text" id="searchInput" placeholder="Search items...">
         <div id="searchResults" class="search-results"></div>
       </div>
-
       <ul id="shoppingList" class="shopping-list"></ul>
     </div>
   </div>
 </div>
 
-<!-- Menu Panel -->
-<div id="menuPanel" class="rel-overlay" style="display:none;">
+<div id="menuPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
-      <span class="rel-title">🍽️ Menu</span>
-      <button class="rel-close" data-close="menuPanel">✕</button>
+      <span class="rel-title">&#x1F37D;&#xFE0F; Menu</span>
+      <button class="rel-close" data-close="menuPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <div class="menu-tabs">
@@ -541,19 +537,18 @@
         <h3 id="menuTodayTitle">Today's Menu</h3>
         <div id="menuTodayList" class="menu-list"></div>
       </div>
-      <div id="menuWeekView" class="menu-view" style="display:none;">
+      <div id="menuWeekView" class="menu-view" style="display: none;">
         <div id="menuWeekList" class="menu-week-list"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Mental Health Panel -->
-<div id="mentalPanel" class="rel-overlay" style="display:none;">
+<div id="mentalPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
-      <span class="rel-title">🧠 Mental Health</span>
-      <button class="rel-close" data-close="mentalPanel">✕</button>
+      <span class="rel-title">&#x1F9E0; Mental Health</span>
+      <button class="rel-close" data-close="mentalPanel">&#x2715;</button>
     </div>
     <div class="healthcare-modal-body">
       <div class="mental-tabs">
@@ -561,15 +556,13 @@
         <button class="mental-tab" data-view="history">History</button>
       </div>
 
-      <!-- Log View -->
       <div id="mentalLogView" class="mental-view">
         <div class="mental-section">
-          <label class="mental-label">� Sleep Hours</label>
+          <label class="mental-label">&#x1F634; Sleep Hours</label>
           <input type="number" id="sleepHours" class="mental-input mental-input--wide" placeholder="Hours" min="0" max="24" step="0.5">
         </div>
-
         <div class="mental-section">
-          <label class="mental-label">😰 Stress Level</label>
+          <label class="mental-label">&#x1F630; Stress Level</label>
           <div class="mental-stress-selector" id="stressSelector">
             <button class="stress-btn" data-stress="1" title="Very Low">1</button>
             <button class="stress-btn" data-stress="2" title="Low">2</button>
@@ -578,61 +571,56 @@
             <button class="stress-btn" data-stress="5" title="Very High">5</button>
           </div>
         </div>
-
         <div class="mental-section">
-          <label class="mental-label">📝 Journal Note (optional)</label>
+          <label class="mental-label">&#x1F4DD; Journal Note (optional)</label>
           <textarea id="mentalJournalNote" class="mental-textarea" placeholder="How are you feeling today?"></textarea>
         </div>
-
         <button id="saveMentalBtn" class="btn-primary mental-save-btn">Save Entry</button>
         <p id="mentalStatus" class="mental-status" aria-live="polite"></p>
       </div>
 
-      <!-- History View -->
-      <div id="mentalHistoryView" class="mental-view" style="display:none;">
+      <div id="mentalHistoryView" class="mental-view" style="display: none;">
         <div id="mentalHistoryList" class="mental-history-list"></div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="ingestModal" class="rel-overlay" style="display:none;">
+<div id="ingestModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal ingest-modal">
     <div class="rel-header">
-      <span class="rel-title">↥ Document Ingestion</span>
+      <span class="rel-title">&#x21A5; Document Ingestion</span>
       <div class="rel-header-controls">
-        <button id="ingestCloseBtn" class="rel-close">✕</button>
+        <button id="ingestCloseBtn" class="rel-close">&#x2715;</button>
       </div>
     </div>
     <div class="ingest-body">
-
       <div class="ingest-upload-panel">
         <div class="ingest-drop-area" id="ingestDropArea">
-          <div class="ingest-drop-icon">📄</div>
+          <div class="ingest-drop-icon">&#x1F4C4;</div>
           <div class="ingest-drop-label">Drop a PDF or DOCX here</div>
           <div class="ingest-drop-sub">or click to browse</div>
-          <input type="file" id="ingestFileInput" accept=".pdf,.docx" style="display:none">
+          <input type="file" id="ingestFileInput" accept=".pdf,.docx" style="display: none;">
         </div>
-        <div class="ingest-file-info" id="ingestFileInfo" style="display:none;">
+        <div class="ingest-file-info" id="ingestFileInfo" style="display: none;">
           <span id="ingestFileName"></span>
-          <button id="ingestClearFile" class="ingest-clear-btn">✕</button>
+          <button id="ingestClearFile" class="ingest-clear-btn">&#x2715;</button>
         </div>
         <div class="ingest-options">
           <label class="ingest-label">Project context</label>
-          <select id="ingestProjectSelect" class="rel-select" style="width:100%"></select>
-          <label class="ingest-label" style="margin-top:0.6rem">Instructions / query (optional)</label>
-          <textarea id="ingestInstructions" class="ingest-instructions" placeholder="e.g. Focus on formal definitions and theorems. Or without file: Where should 'Markov Decision Process' go in the hierarchy?"></textarea>
+          <select id="ingestProjectSelect" class="rel-select rel-select--full"></select>
+          <label class="ingest-label ingest-label--spaced">Instructions / query (optional)</label>
+          <textarea id="ingestInstructions" class="ingest-instructions" placeholder="e.g. Focus on formal definitions and theorems."></textarea>
         </div>
-        <button id="ingestRunBtn" class="ingest-run-btn" disabled>✨ Analyse &amp; Suggest</button>
+        <button id="ingestRunBtn" class="ingest-run-btn" disabled>&#x2728; Analyse &amp; Suggest</button>
         <div id="ingestStatus" class="ingest-status"></div>
       </div>
-
       <div class="ingest-suggestions-panel">
         <div class="ingest-suggestions-header">
           <span class="ingest-suggestions-title">Suggestions</span>
-          <div class="ingest-suggestions-actions" id="ingestBulkActions" style="display:none;">
-            <button id="ingestAcceptAll" class="ingest-bulk-btn ingest-bulk-accept">✔ Accept all</button>
-            <button id="ingestRejectAll" class="ingest-bulk-btn ingest-bulk-reject">✖ Reject all</button>
+          <div class="ingest-suggestions-actions" id="ingestBulkActions" style="display: none;">
+            <button id="ingestAcceptAll" class="ingest-bulk-btn ingest-bulk-accept">&#x2714; Accept all</button>
+            <button id="ingestRejectAll" class="ingest-bulk-btn ingest-bulk-reject">&#x2716; Reject all</button>
           </div>
         </div>
         <div id="ingestSuggestions" class="ingest-suggestions-list">
@@ -643,13 +631,12 @@
   </div>
 </div>
 
-<!-- ====== PROJECT SCHEMAS MODAL ====== -->
-<div id="projectSchemasModal" class="rel-overlay" style="display:none;">
+<div id="projectSchemasModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal schema-modal">
     <div class="rel-header">
-      <span class="rel-title">🧩 Project Schemas</span>
+      <span class="rel-title">&#x1F9E9; Project Schemas</span>
       <div class="rel-header-controls">
-        <button id="projectSchemasCloseBtn" class="rel-close">✕</button>
+        <button id="projectSchemasCloseBtn" class="rel-close">&#x2715;</button>
       </div>
     </div>
     <div class="schema-modal-body">
@@ -659,42 +646,39 @@
           <select id="projectSchemaSelect" class="new-project-select" title="Schema"></select>
         </div>
         <div class="project-schema-actions">
-          <button id="projectSchemaNewBtn" class="kb-btn kb-btn--concept" title="New schema">＋ Schema</button>
-          <button id="projectSchemaRenameBtn" class="kb-btn" title="Rename schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">✎ Rename</button>
-          <button id="projectSchemaDuplicateBtn" class="kb-btn" title="Duplicate schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">⧉ Duplicate</button>
-          <button id="projectSchemaTemplateBtn" class="kb-btn" title="Insert template" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">🧩 Template</button>
-          <button id="projectSchemaDeleteBtn" class="kb-btn" title="Delete schema" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">🗑 Delete</button>
-          <button id="projectSchemaExportBtn" class="kb-btn" title="Export markdown" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65);border-color:rgba(255,255,255,0.12)">⇩ Export MD</button>
+          <button id="projectSchemaNewBtn" class="kb-btn kb-btn--concept" title="New schema">&#xFF0B; Schema</button>
+          <button id="projectSchemaRenameBtn" class="kb-btn kb-btn--ghost" title="Rename schema">&#x270E; Rename</button>
+          <button id="projectSchemaDuplicateBtn" class="kb-btn kb-btn--ghost" title="Duplicate schema">&#x29C9; Duplicate</button>
+          <button id="projectSchemaTemplateBtn" class="kb-btn kb-btn--ghost" title="Insert template">&#x1F9E9; Template</button>
+          <button id="projectSchemaDeleteBtn" class="kb-btn kb-btn--ghost" title="Delete schema">&#x1F5D1; Delete</button>
+          <button id="projectSchemaExportBtn" class="kb-btn kb-btn--ghost" title="Export markdown">&#x21E9; Export MD</button>
         </div>
-        <textarea id="projectSchemaText" class="project-schema-text" placeholder="Escribe aquí tu esquema libre del proyecto (arquitectura, módulos, flujo de datos, riesgos, TODOs, etc.)"></textarea>
+        <textarea id="projectSchemaText" class="project-schema-text" placeholder="Write your free-form project schema here (architecture, modules, data flow, risks, TODOs, etc.)"></textarea>
         <div id="projectSchemaStatus" class="project-schema-status">Select a project to start. Tip: Tab / Shift+Tab for indentation, Ctrl+S to save.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ====== RELATIONS MODAL ====== -->
-<div id="relationsModal" class="rel-overlay" style="display:none;">
+<div id="relationsModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal">
     <div class="rel-header">
-      <span class="rel-title">⇄ Relations Editor</span>
+      <span class="rel-title">&#x21C4; Relations Editor</span>
       <div class="rel-header-controls">
         <label class="rel-toggle-label">
           <input type="checkbox" id="relShowBlocksToggle"> Show blocks
         </label>
         <select id="relProjectFilter" class="rel-select"></select>
-        <button id="relCloseBtn" class="rel-close">✕</button>
+        <button id="relCloseBtn" class="rel-close">&#x2715;</button>
       </div>
     </div>
     <div class="rel-body">
-      <!-- LEFT: visual tree -->
       <div class="rel-tree-panel">
         <div class="rel-tree-label">Concept Hierarchy</div>
         <div id="relConceptTree" class="rel-tree-scroll"></div>
       </div>
-      <!-- RIGHT: edit panel -->
       <div class="rel-edit-panel" id="relEditPanel">
-        <div class="rel-edit-empty">← Select a concept to edit its relations</div>
+        <div class="rel-edit-empty">&#x2190; Select a concept to edit its relations</div>
       </div>
     </div>
   </div>
@@ -702,6 +686,3 @@
 
 </body>
 </html>
-
-
-

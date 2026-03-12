@@ -15,7 +15,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0 0 0.75rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
@@ -31,22 +31,22 @@
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.55);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
 .rss-tab:hover {
-  background: rgba(90,79,207,0.15);
-  color: rgba(255,255,255,0.85);
-  border-color: rgba(90,79,207,0.4);
+  background: var(--accent-light);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
 }
 .rss-tab.active {
-  background: rgba(90,79,207,0.28);
-  color: #c4b5fd;
-  border-color: rgba(90,79,207,0.55);
+  background: var(--accent-primary);
+  color: var(--accent-solid);
+  border-color: var(--accent-hover);
 }
 
 /* ---- Controls ---- */
@@ -58,9 +58,9 @@
 }
 
 .rss-limit-select {
-  background: #1e1b2e;
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 0.3rem 0.55rem;
   font-size: 0.78rem;
@@ -68,9 +68,9 @@
 }
 
 .rss-refresh-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.55);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-tertiary);
   border-radius: 6px;
   width: 28px;
   height: 28px;
@@ -82,8 +82,8 @@
   transition: background 0.15s, color 0.15s;
 }
 .rss-refresh-btn:hover {
-  background: rgba(90,79,207,0.2);
-  color: #c4b5fd;
+  background: var(--accent-light);
+  color: var(--accent-solid);
 }
 
 /* ---- Feed ---- */
@@ -98,7 +98,7 @@
 .rss-loading, .rss-error, .rss-empty {
   padding: 2rem;
   text-align: center;
-  color: rgba(255,255,255,0.38);
+  color: var(--text-quaternary);
   font-style: italic;
   font-size: 0.88rem;
 }
@@ -108,8 +108,8 @@
   display: inline-block;
   width: 12px;
   height: 12px;
-  border: 2px solid rgba(255,255,255,0.15);
-  border-top-color: #c4b5fd;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-solid);
   border-radius: 50%;
   animation: rssSpin 0.7s linear infinite;
   vertical-align: middle;
@@ -122,15 +122,15 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  background: #26233c;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   padding: 0.65rem 0.85rem;
-  border-left: 3px solid rgba(90,79,207,0.25);
+  border-left: 3px solid var(--border-color);
   transition: border-color 0.15s, background 0.15s;
 }
 .rss-card:hover {
-  background: #2d2948;
-  border-left-color: rgba(90,79,207,0.6);
+  background: var(--bg-quaternary);
+  border-left-color: var(--accent-primary);
 }
 .rss-card--ml:hover       { border-left-color: rgba(159,122,234,0.7); }
 .rss-card--markets:hover  { border-left-color: rgba(72,187,120,0.7); }
@@ -140,7 +140,7 @@
 .rss-card-rank {
   font-size: 0.72rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.22);
+  color: var(--text-quaternary);
   min-width: 28px;
   padding-top: 0.15rem;
   text-align: right;
@@ -158,12 +158,12 @@
 .rss-card-title {
   font-size: 0.87rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.88);
+  color: var(--text-primary);
   text-decoration: none;
   line-height: 1.4;
   transition: color 0.15s;
 }
-.rss-card-title:hover { color: #c4b5fd; }
+.rss-card-title:hover { color: var(--accent-solid); }
 
 .rss-card-meta {
   display: flex;
@@ -174,13 +174,13 @@
 
 .rss-source {
   font-size: 0.71rem;
-  color: rgba(255,255,255,0.38);
+  color: var(--text-tertiary);
   font-weight: 500;
 }
 
 .rss-date {
   font-size: 0.71rem;
-  color: rgba(255,255,255,0.26);
+  color: var(--text-quaternary);
 }
 
 .rss-top-cat {
