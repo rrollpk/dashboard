@@ -14,6 +14,7 @@ let currentSlotsByHour = {};
 let selectedDate = new Date();
 let monthCursor = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 let monthActivityCountByIso = {};
+let monthFeaturedCountByIso = {};
 
 async function loadMonthSummary() {
   const year = monthCursor.getFullYear();
@@ -24,10 +25,13 @@ async function loadMonthSummary() {
   }
   const payload = await res.json();
   const next = {};
+  const nextFeatured = {};
   (payload.days || []).forEach(d => {
     next[d.day] = Number(d.items_count) || 0;
+    nextFeatured[d.day] = Number(d.featured_count) || 0;
   });
   monthActivityCountByIso = next;
+  monthFeaturedCountByIso = nextFeatured;
 }
 
 async function refreshMonthCalendar() {
@@ -36,6 +40,7 @@ async function refreshMonthCalendar() {
   } catch (err) {
     console.error('Error loading month summary:', err);
     monthActivityCountByIso = {};
+    monthFeaturedCountByIso = {};
   }
   renderMonthCalendar();
 }
@@ -70,7 +75,10 @@ function renderMonthCalendar() {
     cell.className = 'month-day other-month';
     cell.textContent = String(dayNumber);
 
-    if ((monthActivityCountByIso[cellIso] || 0) > 0) {
+    if ((monthFeaturedCountByIso[cellIso] || 0) > 0) {
+      cell.classList.add('has-featured');
+      cell.title = `${monthFeaturedCountByIso[cellIso]} featured`;
+    } else if ((monthActivityCountByIso[cellIso] || 0) > 0) {
       cell.classList.add('has-activity');
       cell.title = `${monthActivityCountByIso[cellIso]} item(s)`;
     }
@@ -97,7 +105,10 @@ function renderMonthCalendar() {
     if (cellIso === selectedIso) {
       cell.classList.add('selected');
     }
-    if ((monthActivityCountByIso[cellIso] || 0) > 0) {
+    if ((monthFeaturedCountByIso[cellIso] || 0) > 0) {
+      cell.classList.add('has-featured');
+      cell.title = `${monthFeaturedCountByIso[cellIso]} featured`;
+    } else if ((monthActivityCountByIso[cellIso] || 0) > 0) {
       cell.classList.add('has-activity');
       cell.title = `${monthActivityCountByIso[cellIso]} item(s)`;
     }
@@ -121,7 +132,10 @@ function renderMonthCalendar() {
     cell.className = 'month-day other-month';
     cell.textContent = String(i);
 
-    if ((monthActivityCountByIso[cellIso] || 0) > 0) {
+    if ((monthFeaturedCountByIso[cellIso] || 0) > 0) {
+      cell.classList.add('has-featured');
+      cell.title = `${monthFeaturedCountByIso[cellIso]} featured`;
+    } else if ((monthActivityCountByIso[cellIso] || 0) > 0) {
       cell.classList.add('has-activity');
       cell.title = `${monthActivityCountByIso[cellIso]} item(s)`;
     }
@@ -377,6 +391,25 @@ function makeTaskRow(hour, item) {
   dur.title = 'Ajustar minutos';
   dur.addEventListener('click', () => adjustTaskDuration(hour, item.id));
 
+  const star = document.createElement('button');
+  star.className = 'slot-task-star' + (item.featured ? ' active' : '');
+  star.type = 'button';
+  star.textContent = '★';
+  star.title = item.featured ? 'Quitar destacado' : 'Destacar';
+  star.addEventListener('click', async () => {
+    try {
+      const res = await fetch(`${CALENDAR_API_BASE}/calendar/item/${item.id}/featured`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await renderSchedule();
+    } catch (err) {
+      console.error('Error toggling featured:', err);
+    }
+  });
+
   const del = document.createElement('button');
   del.className = 'slot-task-delete';
   del.type = 'button';
@@ -393,6 +426,7 @@ function makeTaskRow(hour, item) {
 
   row.appendChild(title);
   row.appendChild(dur);
+  row.appendChild(star);
   row.appendChild(del);
   return row;
 }

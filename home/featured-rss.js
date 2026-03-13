@@ -148,7 +148,7 @@ async function loadFeaturedEvents() {
     if (!todayContainer && !upcomingContainer) return;
 
     try {
-        const res = await fetch('https://api-dashboard-production-fc05.up.railway.app/calendar/upcoming?days=14&limit=30');
+        const res = await fetch('https://api-dashboard-production-fc05.up.railway.app/calendar/upcoming?days=14&limit=80');
         if (!res.ok) throw new Error('Could not load upcoming events');
         const payload = await res.json();
         const events = Array.isArray(payload.events) ? payload.events : [];

@@ -178,6 +178,19 @@
   box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
 }
 
+.month-day.has-featured {
+  border-color: #f6c343;
+}
+.month-day.has-featured::before {
+  content: '★';
+  position: absolute;
+  font-size: 7px;
+  line-height: 1;
+  bottom: 1px;
+  left: 2px;
+  color: #f6c343;
+}
+
 .month-day {
   position: relative;
 }
@@ -244,6 +257,27 @@
   height: 26px;
   line-height: 1;
   font-size: 0.95em;
+}
+
+.slot-task-star {
+  width: 26px;
+  height: 26px;
+  line-height: 1;
+  font-size: 0.85em;
+  border: var(--border-thin) solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s, color 0.15s;
+}
+.slot-task-star.active {
+  opacity: 1;
+  color: #f6c343;
+}
+.slot-task-star:hover {
+  opacity: 1;
 }
 
 	slot-add-btn {
