@@ -425,7 +425,7 @@ function setupBlockTypeFilters() {
     "formula",
     "example",
     "warning",
-    "exam"
+    "code"
   ];
 
   blockTypeFilters.innerHTML = "";

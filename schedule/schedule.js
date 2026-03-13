@@ -40,7 +40,13 @@ function createOccurrenceSection(titleText, occurrence) {
     ul.addEventListener("drop", handleDrop);
 
     title.addEventListener("click", () => {
-        section.classList.toggle("collapsed");
+        const wasCollapsed = section.classList.contains("collapsed");
+        // Collapse all sections first
+        Object.values(OccurrenceSections).forEach(s => s.classList.add("collapsed"));
+        // Toggle the clicked one open if it was collapsed
+        if (wasCollapsed) {
+            section.classList.remove("collapsed");
+        }
     });
 
     section.appendChild(title);
@@ -112,8 +118,10 @@ function showOccurrenceTasks(activeContext) {
     Object.entries(OccurrenceSections).forEach(([context, section]) => {
         if (context === activeContext) {
             section.classList.remove("collapsed");
+            section.classList.add("current-occurrence");
         } else {
             section.classList.add("collapsed");
+            section.classList.remove("current-occurrence");
         }
     });
 }

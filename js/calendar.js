@@ -359,7 +359,7 @@ async function adjustTaskDuration(hour, targetItemId) {
   }
 }
 
-function makeTaskRow(hour, item) {
+function makeTaskRow(hour, item, showAdd) {
   const row = document.createElement('div');
   row.className = 'slot-task-row';
 
@@ -428,6 +428,17 @@ function makeTaskRow(hour, item) {
   row.appendChild(dur);
   row.appendChild(star);
   row.appendChild(del);
+
+  if (showAdd) {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'slot-add-btn';
+    addBtn.type = 'button';
+    addBtn.textContent = '+';
+    addBtn.title = 'Añadir segunda tarea';
+    addBtn.addEventListener('click', () => addTaskToSlot(hour));
+    row.appendChild(addBtn);
+  }
+
   return row;
 }
 
@@ -464,11 +475,16 @@ async function renderSchedule() {
     const slotContent = document.createElement('div');
     slotContent.className = 'slot-content';
 
-    items.forEach(item => {
-      slotContent.appendChild(makeTaskRow(hour, item));
+    items.forEach((item, idx) => {
+      const isLast = idx === items.length - 1;
+      const showAdd = isLast && items.length < 2;
+      slotContent.appendChild(makeTaskRow(hour, item, showAdd));
     });
 
     if (items.length === 0) {
+      const emptyRow = document.createElement('div');
+      emptyRow.className = 'slot-empty-row';
+
       const quickInput = document.createElement('input');
       quickInput.type = 'text';
       quickInput.className = 'activity-input';
@@ -493,16 +509,17 @@ async function renderSchedule() {
         }
       });
 
-      slotContent.appendChild(quickInput);
-    }
+      const addBtn = document.createElement('button');
+      addBtn.className = 'slot-add-btn';
+      addBtn.type = 'button';
+      addBtn.textContent = '+';
+      addBtn.title = 'A\u00f1adir tarea';
+      addBtn.addEventListener('click', () => addTaskToSlot(hour));
 
-    const addBtn = document.createElement('button');
-    addBtn.className = 'slot-add-btn';
-    addBtn.type = 'button';
-    addBtn.textContent = items.length === 0 ? '+ task' : '+ second';
-    addBtn.disabled = items.length >= 2;
-    addBtn.addEventListener('click', () => addTaskToSlot(hour));
-    slotContent.appendChild(addBtn);
+      emptyRow.appendChild(quickInput);
+      emptyRow.appendChild(addBtn);
+      slotContent.appendChild(emptyRow);
+    }
 
     const canDrag = items.length > 0;
     hourSlot.draggable = canDrag;

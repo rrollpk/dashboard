@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
 
+  <!-- Styles -->
   <link rel="stylesheet" href="core/styles/themes.css">
   <link rel="stylesheet" href="core/styles/core.css">
   <link rel="stylesheet" href="home/home.css">
@@ -14,12 +15,15 @@
   <link rel="stylesheet" href="healthcare/healthcare.css">
   <link rel="stylesheet" href="rss/rss.css">
 
+  <!-- KaTeX -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
+  <!-- Marked (Markdown parser) -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
 
+  <!-- Scripts -->
   <script defer src="core/core.js"></script>
   <script defer src="home/weather-time.js"></script>
   <script defer src="home/logs.js"></script>
@@ -44,6 +48,7 @@
 <body>
 <main>
 
+  <!-- ====== TABS ====== -->
   <div class="tabs">
     <input type="radio" name="tab" id="tab1" checked>
     <input type="radio" name="tab" id="tab2">
@@ -71,6 +76,7 @@
 
     <div class="tab-content">
 
+      <!-- ====== TAB 1: HOME ====== -->
       <div class="content c1">
         <div class="theme-selector-container">
           <label for="themeSelect"></label>
@@ -165,12 +171,13 @@
         </div>
 
         <div class="box weather-widget">
-          <div class="weather-temp">--&#xB0;C</div>
+          <div class="weather-temp">--°C</div>
           <div class="weather-description">...</div>
           <div class="weather-hour">--:--</div>
         </div>
       </div>
 
+      <!-- ====== TAB 2: SCHEDULE ====== -->
       <div class="content c2">
         <div class="box month-calendar-box">
           <div class="month-calendar-header">
@@ -202,15 +209,18 @@
         </div>
       </div>
 
+      <!-- ====== TAB 3: FOCUS ====== -->
       <div class="content c3">
         <div class="pomodoro-layout">
 
+          <!-- Left: Timer -->
           <div class="pomodoro-timer-side">
             <div class="pomodoro-section">
               <h3>Today's Working Sessions</h3>
               <div id="todayPomodoros"></div>
             </div>
 
+            <!-- Start form -->
             <div id="startForm" class="pomodoro-section">
               <h3>New Working Session</h3>
               <div class="form-group">
@@ -224,6 +234,7 @@
               <button id="startPomodoroBtn" class="btn-primary">Start Session</button>
             </div>
 
+            <!-- Active session -->
             <div id="activePomodoro" class="pomodoro-section" style="display: none;">
               <div class="dual-timer-row">
                 <div id="studyTimerBlock" class="timer-block timer-study timer-active">
@@ -236,7 +247,7 @@
                 </div>
               </div>
 
-              <button id="switchBtn" class="btn-switch-mode">&#x23F8; Pause study &#xB7; Start rest &#x2192;</button>
+              <button id="switchBtn" class="btn-switch-mode">&#x23F8; Pause study · Start rest &#x2192;</button>
 
               <div class="focus-display">
                 <span class="focus-label">Focus: </span>
@@ -253,6 +264,7 @@
             </div>
           </div>
 
+          <!-- Right: Projects -->
           <div class="pomodoro-projects-side">
             <div class="pomodoro-section">
               <div class="projects-header">
@@ -286,6 +298,7 @@
         </div>
       </div>
 
+      <!-- ====== TAB 4: INTEL ====== -->
       <div class="content c4">
         <div class="knowledge-layout">
           <aside id="knowledgeSidebar" class="knowledge-sidebar">
@@ -328,6 +341,7 @@
         </div>
       </div>
 
+      <!-- ====== TAB 5: RSS ====== -->
       <div class="content c5">
         <div class="rss-layout">
           <div class="rss-header">
@@ -351,6 +365,7 @@
         </div>
       </div>
 
+      <!-- ====== TAB 6: HEALTHCARE ====== -->
       <div class="content c6">
         <div class="healthcare-hub">
           <div class="healthcare-left">
@@ -412,15 +427,31 @@
         </div>
       </div>
 
-      <div class="content c7"></div>
-      <div class="content c8"></div>
-      <div class="content c9"></div>
-      <div class="content c10"></div>
+      <!-- ====== TAB 7: FINANCES ====== -->
+      <div class="content c7">
+        <!-- Content managed by JS -->
+      </div>
+
+      <!-- ====== TAB 8: LEISURE ====== -->
+      <div class="content c8">
+        <!-- Content managed by JS -->
+      </div>
+
+      <!-- ====== TAB 9: PLAZA ====== -->
+      <div class="content c9">
+        <!-- Content managed by JS -->
+      </div>
+
+      <!-- ====== TAB 10: SYSTEM ====== -->
+      <div class="content c10">
+        <!-- Content managed by JS -->
+      </div>
 
     </div>
   </div>
 </main>
 
+<!-- ====== WATER PANEL ====== -->
 <div id="waterPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal">
     <div class="rel-header">
@@ -442,6 +473,7 @@
   </div>
 </div>
 
+<!-- ====== WEIGHT PANEL ====== -->
 <div id="weightPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal">
     <div class="rel-header">
@@ -462,6 +494,7 @@
   </div>
 </div>
 
+<!-- ====== GYM PANEL ====== -->
 <div id="gymPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
@@ -471,11 +504,13 @@
     <div class="healthcare-modal-body">
       <p id="gymStatus" class="gym-status" aria-live="polite"></p>
 
+      <!-- Routine list -->
       <div id="gymRoutineList" class="gym-view">
         <h3>Routines</h3>
         <div id="routineListContainer" class="routine-list"></div>
       </div>
 
+      <!-- Routine detail -->
       <div id="gymRoutineDetail" class="gym-view" style="display: none;">
         <div class="session-header">
           <button id="backToRoutineList" class="btn-tiny">&#x2190; Back</button>
@@ -485,6 +520,7 @@
         <button id="startRoutineFromDetail" class="btn-primary">Start Workout</button>
       </div>
 
+      <!-- Active session -->
       <div id="gymSessionView" class="gym-view" style="display: none;">
         <div class="session-header">
           <button id="backToRoutines" class="btn-tiny">&#x2190; Back</button>
@@ -494,6 +530,7 @@
         <select id="addExerciseSelect" class="gym-select"></select>
       </div>
 
+      <!-- Set logger -->
       <div id="gymSetLogger" class="gym-view" style="display: none;">
         <div class="session-header">
           <button id="backToSession" class="btn-tiny">&#x2190; Back</button>
@@ -505,6 +542,7 @@
   </div>
 </div>
 
+<!-- ====== SHOPPING PANEL ====== -->
 <div id="shoppingPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
@@ -522,6 +560,7 @@
   </div>
 </div>
 
+<!-- ====== MENU PANEL ====== -->
 <div id="menuPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
@@ -544,6 +583,7 @@
   </div>
 </div>
 
+<!-- ====== MENTAL HEALTH PANEL ====== -->
 <div id="mentalPanel" class="rel-overlay" style="display: none;">
   <div class="rel-modal healthcare-modal healthcare-modal--large">
     <div class="rel-header">
@@ -556,6 +596,7 @@
         <button class="mental-tab" data-view="history">History</button>
       </div>
 
+      <!-- Log view -->
       <div id="mentalLogView" class="mental-view">
         <div class="mental-section">
           <label class="mental-label">&#x1F634; Sleep Hours</label>
@@ -579,6 +620,7 @@
         <p id="mentalStatus" class="mental-status" aria-live="polite"></p>
       </div>
 
+      <!-- History view -->
       <div id="mentalHistoryView" class="mental-view" style="display: none;">
         <div id="mentalHistoryList" class="mental-history-list"></div>
       </div>
@@ -586,6 +628,7 @@
   </div>
 </div>
 
+<!-- ====== INGEST MODAL ====== -->
 <div id="ingestModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal ingest-modal">
     <div class="rel-header">
@@ -608,8 +651,8 @@
         </div>
         <div class="ingest-options">
           <label class="ingest-label">Project context</label>
-          <select id="ingestProjectSelect" class="rel-select rel-select--full"></select>
-          <label class="ingest-label ingest-label--spaced">Instructions / query (optional)</label>
+          <select id="ingestProjectSelect" class="rel-select" style="width: 100%;"></select>
+          <label class="ingest-label" style="margin-top: 0.6rem;">Instructions / query (optional)</label>
           <textarea id="ingestInstructions" class="ingest-instructions" placeholder="e.g. Focus on formal definitions and theorems."></textarea>
         </div>
         <button id="ingestRunBtn" class="ingest-run-btn" disabled>&#x2728; Analyse &amp; Suggest</button>
@@ -631,6 +674,7 @@
   </div>
 </div>
 
+<!-- ====== PROJECT SCHEMAS MODAL ====== -->
 <div id="projectSchemasModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal schema-modal">
     <div class="rel-header">
@@ -653,13 +697,14 @@
           <button id="projectSchemaDeleteBtn" class="kb-btn kb-btn--ghost" title="Delete schema">&#x1F5D1; Delete</button>
           <button id="projectSchemaExportBtn" class="kb-btn kb-btn--ghost" title="Export markdown">&#x21E9; Export MD</button>
         </div>
-        <textarea id="projectSchemaText" class="project-schema-text" placeholder="Write your free-form project schema here (architecture, modules, data flow, risks, TODOs, etc.)"></textarea>
+        <textarea id="projectSchemaText" class="project-schema-text" placeholder="Escribe aqu&#xED; tu esquema libre del proyecto (arquitectura, m&#xF3;dulos, flujo de datos, riesgos, TODOs, etc.)"></textarea>
         <div id="projectSchemaStatus" class="project-schema-status">Select a project to start. Tip: Tab / Shift+Tab for indentation, Ctrl+S to save.</div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ====== RELATIONS MODAL ====== -->
 <div id="relationsModal" class="rel-overlay" style="display: none;">
   <div class="rel-modal">
     <div class="rel-header">
@@ -673,10 +718,12 @@
       </div>
     </div>
     <div class="rel-body">
+      <!-- Left: Tree -->
       <div class="rel-tree-panel">
         <div class="rel-tree-label">Concept Hierarchy</div>
         <div id="relConceptTree" class="rel-tree-scroll"></div>
       </div>
+      <!-- Right: Edit -->
       <div class="rel-edit-panel" id="relEditPanel">
         <div class="rel-edit-empty">&#x2190; Select a concept to edit its relations</div>
       </div>
